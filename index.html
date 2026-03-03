@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditScope - Risk Analizi ve Karar Destek Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CreditScope</h1>
+            <p>Risk Analizi ve Karar Destek Sistemi</p>
+        </header>
+
+        <div class="card">
+            <form id="loanForm">
+                <div class="form-grid">
+                    <!-- Sayısal Girdiler -->
+                    <div class="input-group">
+                        <label for="Age">Yaş</label>
+                        <input type="number" id="Age" name="Age" required min="18" placeholder="Örn: 35">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="Income">Yıllık Gelir ($)</label>
+                        <input type="number" id="Income" name="Income" required placeholder="Örn: 65000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="LoanAmount">Kredi Tutarı ($)</label>
+                        <input type="number" id="LoanAmount" name="LoanAmount" required placeholder="Örn: 15000">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="CreditScore">Kredi Notu (Findeks/FICO)</label>
+                        <input type="number" id="CreditScore" name="CreditScore" required placeholder="Örn: 720">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="MonthsEmployed">Çalışma Süresi (Ay)</label>
+                        <input type="number" id="MonthsEmployed" name="MonthsEmployed" required placeholder="Örn: 48">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="NumCreditLines">Kredi Limiti Sayısı (Açık Hat)</label>
+                        <input type="number" id="NumCreditLines" name="NumCreditLines" required placeholder="Örn: 3">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="InterestRate">Faiz Oranı (%)</label>
+                        <input type="number" id="InterestRate" name="InterestRate" step="0.01" required placeholder="Örn: 14.5">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="LoanTerm">Kredi Vadesi (Ay)</label>
+                        <input type="number" id="LoanTerm" name="LoanTerm" required placeholder="Örn: 36">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="DTIRatio">Borç/Gelir Oranı - DTI (%)</label>
+                        <input type="number" id="DTIRatio" name="DTIRatio" step="0.01" required placeholder="Örn: 0.35">
+                    </div>
+
+                    <!-- Kategorik Girdiler -->
+                    <div class="input-group">
+                        <label for="Education">Eğitim Durumu</label>
+                        <select id="Education" name="Education" required>
+                            <option value="High School">Lise</option>
+                            <option value="Bachelor's">Lisans</option>
+                            <option value="Master's">Yüksek Lisans</option>
+                            <option value="PhD">Doktora</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="EmploymentType">Çalışma Şekli</label>
+                        <select id="EmploymentType" name="EmploymentType" required>
+                            <option value="Full-time">Tam Zamanlı</option>
+                            <option value="Part-time">Yarı Zamanlı</option>
+                            <option value="Self-employed">Serbest Çalışan (İş Sahibi)</option>
+                            <option value="Unemployed">İşsiz</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="MaritalStatus">Medeni Hal</label>
+                        <select id="MaritalStatus" name="MaritalStatus" required>
+                            <option value="Married">Evli</option>
+                            <option value="Single">Bekar</option>
+                            <option value="Divorced">Boşanmış</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="HasMortgage">İpotek (Mortgage) Var Mı?</label>
+                        <select id="HasMortgage" name="HasMortgage" required>
+                            <option value="Yes">Evet</option>
+                            <option value="No">Hayır</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="HasDependents">Bakmakla Yükümlü Kişi Var Mı?</label>
+                        <select id="HasDependents" name="HasDependents" required>
+                            <option value="Yes">Evet</option>
+                            <option value="No">Hayır</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="LoanPurpose">Kredi Amacı</label>
+                        <select id="LoanPurpose" name="LoanPurpose" required>
+                            <option value="Auto">Otomobil Alımı</option>
+                            <option value="Business">Ticari / İş Geliştirme</option>
+                            <option value="Education">Eğitim Masrafları</option>
+                            <option value="Home">Ev Alımı</option>
+                            <option value="Other">Diğer Masraflar</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="HasCoSigner">Kefil Var Mı?</label>
+                        <select id="HasCoSigner" name="HasCoSigner" required>
+                            <option value="Yes">Evet</option>
+                            <option value="No">Hayır</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn">Risk Analizi Yap</button>
+            </form>
+
+            <div id="resultBox" class="hidden">
+                <h3 id="resultTitle">Sonuç Bekleniyor...</h3>
+                <p id="resultDesc"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
