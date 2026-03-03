@@ -71,26 +71,30 @@ Proje iki ana katmandan oluşmaktadır:
 - Backend API'ye gönderir
 - Sonucu dinamik olarak arayüzde gösterir
 
----
 
-## 📁 Proje Yapısı (Örnek)
+## 📁 Proje Yapısı
+
+```
 CreditScope/
 │
-├── api.py
-├── model.pkl
-├── scaler.pkl
-├── index.html
-├── static/
-│ ├── style.css
-│ └── script.js
+├── api.py                  # FastAPI backend uygulaması
+├── model.pkl               # Eğitilmiş XGBoost modeli
+├── scaler.pkl              # Feature scaling için kaydedilmiş scaler
+├── requirements.txt        # Python bağımlılıkları
 │
 ├── notebooks/
-│ └── model_training.ipynb
+│   └── model_training.ipynb   # Model geliştirme ve analiz süreci
 │
-└── README.md
+├── static/
+│   ├── style.css           # Arayüz stil dosyası
+│   └── script.js           # Frontend JavaScript (Fetch API)
+│
+├── templates/
+│   └── index.html          # Kullanıcı arayüzü
+│
+└── README.md               # Proje dokümantasyonu
+```
 
-
----
 
 ## ⚙️ Kurulum ve Çalıştırma
 
@@ -98,8 +102,6 @@ CreditScope/
 
 ```bash
 pip install fastapi uvicorn pandas scikit-learn xgboost joblib
-uvicorn api:app --reload
-
 ```
 ### 2️⃣ API'nin Başlatılması
 ```bash
