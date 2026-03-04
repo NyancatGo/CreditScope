@@ -10,7 +10,7 @@ app = FastAPI(title="CreditScope - Risk Analizi API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -49,8 +49,8 @@ def predict_risk(application: LoanApplication):
     # Categorical Columns for One-Hot Encoding
     categorical_cols = ['Education', 'EmploymentType', 'MaritalStatus', 'HasMortgage', 'HasDependents', 'LoanPurpose', 'HasCoSigner']
 
-    # Apply One-Hot Encoding
-    df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+    # Apply One-Hot Encoding (Do NOT use drop_first=True on single user inputs!)
+    df_encoded = pd.get_dummies(df, columns=categorical_cols)
 
     # Ensure all feature names are present, fill with 0 (since user input will lack many categories)
     for col in feature_names:

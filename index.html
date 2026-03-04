@@ -3,141 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreditScope - Risk Analizi ve Karar Destek Sistemi</title>
+    <title>CreditScope - Kredi Risk Analizi Modülü</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>CreditScope</h1>
-            <p>Risk Analizi ve Karar Destek Sistemi</p>
-        </header>
-
-        <div class="card">
-            <form id="loanForm">
-                <div class="form-grid">
-                    <!-- Sayısal Girdiler -->
-                    <div class="input-group">
-                        <label for="Age">Yaş</label>
-                        <input type="number" id="Age" name="Age" required min="18" placeholder="Örn: 35">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="Income">Yıllık Gelir ($)</label>
-                        <input type="number" id="Income" name="Income" required placeholder="Örn: 65000">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="LoanAmount">Kredi Tutarı ($)</label>
-                        <input type="number" id="LoanAmount" name="LoanAmount" required placeholder="Örn: 15000">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="CreditScore">Kredi Notu (Findeks/FICO)</label>
-                        <input type="number" id="CreditScore" name="CreditScore" required placeholder="Örn: 720">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="MonthsEmployed">Çalışma Süresi (Ay)</label>
-                        <input type="number" id="MonthsEmployed" name="MonthsEmployed" required placeholder="Örn: 48">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="NumCreditLines">Kredi Limiti Sayısı (Açık Hat)</label>
-                        <input type="number" id="NumCreditLines" name="NumCreditLines" required placeholder="Örn: 3">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="InterestRate">Faiz Oranı (%)</label>
-                        <input type="number" id="InterestRate" name="InterestRate" step="0.01" required placeholder="Örn: 14.5">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="LoanTerm">Kredi Vadesi (Ay)</label>
-                        <input type="number" id="LoanTerm" name="LoanTerm" required placeholder="Örn: 36">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="DTIRatio">Borç/Gelir Oranı - DTI (%)</label>
-                        <input type="number" id="DTIRatio" name="DTIRatio" step="0.01" required placeholder="Örn: 0.35">
-                    </div>
-
-                    <!-- Kategorik Girdiler -->
-                    <div class="input-group">
-                        <label for="Education">Eğitim Durumu</label>
-                        <select id="Education" name="Education" required>
-                            <option value="High School">Lise</option>
-                            <option value="Bachelor's">Lisans</option>
-                            <option value="Master's">Yüksek Lisans</option>
-                            <option value="PhD">Doktora</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="EmploymentType">Çalışma Şekli</label>
-                        <select id="EmploymentType" name="EmploymentType" required>
-                            <option value="Full-time">Tam Zamanlı</option>
-                            <option value="Part-time">Yarı Zamanlı</option>
-                            <option value="Self-employed">Serbest Çalışan (İş Sahibi)</option>
-                            <option value="Unemployed">İşsiz</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="MaritalStatus">Medeni Hal</label>
-                        <select id="MaritalStatus" name="MaritalStatus" required>
-                            <option value="Married">Evli</option>
-                            <option value="Single">Bekar</option>
-                            <option value="Divorced">Boşanmış</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="HasMortgage">İpotek (Mortgage) Var Mı?</label>
-                        <select id="HasMortgage" name="HasMortgage" required>
-                            <option value="Yes">Evet</option>
-                            <option value="No">Hayır</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="HasDependents">Bakmakla Yükümlü Kişi Var Mı?</label>
-                        <select id="HasDependents" name="HasDependents" required>
-                            <option value="Yes">Evet</option>
-                            <option value="No">Hayır</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="LoanPurpose">Kredi Amacı</label>
-                        <select id="LoanPurpose" name="LoanPurpose" required>
-                            <option value="Auto">Otomobil Alımı</option>
-                            <option value="Business">Ticari / İş Geliştirme</option>
-                            <option value="Education">Eğitim Masrafları</option>
-                            <option value="Home">Ev Alımı</option>
-                            <option value="Other">Diğer Masraflar</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="HasCoSigner">Kefil Var Mı?</label>
-                        <select id="HasCoSigner" name="HasCoSigner" required>
-                            <option value="Yes">Evet</option>
-                            <option value="No">Hayır</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" id="submitBtn">Risk Analizi Yap</button>
-            </form>
-
-            <div id="resultBox" class="hidden">
-                <h3 id="resultTitle">Sonuç Bekleniyor...</h3>
-                <p id="resultDesc"></p>
+    
+    <!-- Bank Dashboard Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-building-columns"></i>
+            <h2>CreditScope<span>PRO</span></h2>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#"><i class="fa-solid fa-users"></i> Müşteri Portföyü</a></li>
+            <li><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Kredi Başvuruları</a></li>
+            <li class="active"><a href="#"><i class="fa-solid fa-shield-halved"></i> Risk Analizi Modülü</a></li>
+            <li><a href="#"><i class="fa-solid fa-chart-line"></i> Finansal Raporlar</a></li>
+            <li><a href="#"><i class="fa-solid fa-gear"></i> Sistem Ayarları</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar"><i class="fa-solid fa-user-tie"></i></div>
+            <div class="user-info">
+                <h4>Arda K.</h4>
+                <p>Kredi Uzmanı</p>
             </div>
         </div>
-    </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Top Navbar -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Müşteri TC veya ID Ara...">
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">3</span></button>
+                <button class="icon-btn"><i class="fa-regular fa-envelope"></i></button>
+                <div class="branch-info">Merkez Şube (#001)</div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="content-wrapper">
+            <div class="page-header">
+                <div>
+                    <h1>Yapay Zeka Destekli Kredi Skorlaması</h1>
+                    <p>Müşteri verilerini girerek anlık temerrüt ve onay/red analizini gerçekleştirin.</p>
+                </div>
+                <button class="btn-secondary"><i class="fa-solid fa-arrow-rotate-right"></i> Formu Temizle</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-clipboard-user"></i> Müşteri Risk Değerlendirme Formu</h3>
+                </div>
+                
+                <form id="loanForm" class="card-body">
+                    <div class="form-grid">
+                        
+                        <!-- Sayısal Girdiler -->
+                        <div class="input-group">
+                            <label for="Age">
+                                Yaş
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Müşterinin yaşı. Çok genç veya yaşlı olmak geri ödeme alışkanlıklarında istatistiksel fark yaratabilir.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="Age" name="Age" required min="18" placeholder="Örn: 35">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="Income">
+                                Yıllık Gelir ($)
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Müşterinin 1 yıl içindeki beyan edilen toplam geliri. Ödeme gücünün en büyük kanıtıdır.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="Income" name="Income" required placeholder="Örn: 65000">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="LoanAmount">
+                                Kredi Tutarı ($)
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Müşterinin bankadan talep ettiği toplam anapara (kredi) miktarı.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="LoanAmount" name="LoanAmount" required placeholder="Örn: 15000">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="CreditScore">
+                                Kredi Notu / Puanı
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Findeks (0-1900 arası) veya FICO (300-850 arası) puanı. Müşterinin finansal geçmişinin özetidir. Yüksek puan güveni temsil eder.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="CreditScore" name="CreditScore" required placeholder="Örn: 720">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="MonthsEmployed">
+                                Çalışma Süresi (Ay)
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Mevcut iş yerinde kesintisiz çalışılan ay sayısı. İş istikrarını kanıtlar. Süre uzadıkça risk genelde düşer.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="MonthsEmployed" name="MonthsEmployed" required placeholder="Örn: 48">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="NumCreditLines">
+                                Açık Kredi Kanalları
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Müşterinin halihazırda açık olan diğer kredi veya kredi kartlarının adedi. Çok fazla borç hattı riski artırabilir.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="NumCreditLines" name="NumCreditLines" required placeholder="Örn: 3">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="InterestRate">
+                                Faiz Oranı (%)
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Sistemin müşteriye sunacağı/hesaplanan yıllık faiz oranı. Örneğin %15. Çok yüksek faiz, riski doğal olarak matematiksel bir şekilde tetikler.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="InterestRate" name="InterestRate" step="0.01" required placeholder="Örn: 14.5">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="LoanTerm">
+                                Kredi Vadesi (Taksit/Ay)
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Borcun kaç ayda kapanacağını belirler. Süre uzadıkça aylık ödeme düşer fakat uzun vadede risk artabilir.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="LoanTerm" name="LoanTerm" required placeholder="Örn: 36">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="DTIRatio">
+                                Borç/Gelir Oranı - DTI (%)
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Aylık borçların aylık gelire bölünmesi. (0.35 = Gelirin %35'i borca gidiyor anlamına gelir). %40'ın üstü genelde kritik banka sınırıdır.</span>
+                                </div>
+                            </label>
+                            <input type="number" id="DTIRatio" name="DTIRatio" step="0.01" required placeholder="Örn: 0.35">
+                        </div>
+
+                        <!-- Kategorik Girdiler -->
+                        <div class="input-group">
+                            <label for="Education">
+                                Eğitim Durumu
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Eğitim düzeyi, kariyer potansiyeli ve kriz anı iş bulabilme yeteneğini temsil ettiği için skoru etkiler.</span>
+                                </div>
+                            </label>
+                            <select id="Education" name="Education" required>
+                                <option value="High School">Lise</option>
+                                <option value="Bachelor's">Lisans</option>
+                                <option value="Master's">Yüksek Lisans</option>
+                                <option value="PhD">Doktora</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="EmploymentType">
+                                Çalışma Şekli
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Düzenli maaş yatan (Tam zamanlı) veya esnek gelirli (Serbest vb.) ayrımı. Sabit gelir her zaman riski azaltır.</span>
+                                </div>
+                            </label>
+                            <select id="EmploymentType" name="EmploymentType" required>
+                                <option value="Full-time">Tam Zamanlı</option>
+                                <option value="Part-time">Yarı Zamanlı</option>
+                                <option value="Self-employed">Serbest Çalışan (İş Sahibi)</option>
+                                <option value="Unemployed">İşsiz</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="MaritalStatus">
+                                Medeni Hal
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Finansal sorumlulukların hane halkı arasındaki paylaşımı sebebiyle değerlendirilir.</span>
+                                </div>
+                            </label>
+                            <select id="MaritalStatus" name="MaritalStatus" required>
+                                <option value="Married">Evli</option>
+                                <option value="Single">Bekar</option>
+                                <option value="Divorced">Boşanmış</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="HasMortgage">
+                                İpotek (Mortgage) Var Mı?
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Devam eden bir ev kredisi ödemesi veya gayrimenkul haczi olup olmaması durumu.</span>
+                                </div>
+                            </label>
+                            <select id="HasMortgage" name="HasMortgage" required>
+                                <option value="Yes">Evet</option>
+                                <option value="No">Hayır</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="HasDependents">
+                                Bakmakla Yükümlü Kişi Var Mı?
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Müşterinin gelirinden pay alan çocuk veya bakıma muhtaç yaşlıların evde bulunma durumu. Giderleri artırıcı bir faktördür.</span>
+                                </div>
+                            </label>
+                            <select id="HasDependents" name="HasDependents" required>
+                                <option value="Yes">Evet</option>
+                                <option value="No">Hayır</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="LoanPurpose">
+                                Kredi Amacı
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Kredinin ev/araba gibi teminatlı bir yatırıma mı yatırılacağı veya ihtiyaç/borç kapatma için mi kullanılacağı, riskin niteliğini belirler.</span>
+                                </div>
+                            </label>
+                            <select id="LoanPurpose" name="LoanPurpose" required>
+                                <option value="Auto">Otomobil Alımı</option>
+                                <option value="Business">Ticari / İş Geliştirme</option>
+                                <option value="Education">Eğitim Masrafları</option>
+                                <option value="Home">Ev Alımı</option>
+                                <option value="Other">Diğer Masraflar</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="HasCoSigner">
+                                Kefil Var Mı?
+                                <div class="tooltip-wrapper">
+                                    <i class="fa-solid fa-circle-info info-icon"></i>
+                                    <span class="tooltip">Riski garanti edecek kredi itibarı yüksek, ikinci imza sahibi olup olmadığı. Bir kefilin varlığı temerrüt riskini ciddi ölçüde düşürür.</span>
+                                </div>
+                            </label>
+                            <select id="HasCoSigner" name="HasCoSigner" required>
+                                <option value="Yes">Evet</option>
+                                <option value="No">Hayır</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Form Gönderim Butonu -->
+                    <div class="form-actions" style="text-align: right; margin-top: 2rem;">
+                        <button type="submit" id="submitBtn" class="btn-analyze">
+                            <span id="btnText"><i class="fa-solid fa-bolt"></i> Risk Analizini Başlat</span>
+                            <!-- Yükleniyor Animasyonu (Başlangıçta Gizli) -->
+                            <span id="btnSpinner" class="hidden">
+                                <i class="fa-solid fa-circle-notch fa-spin"></i> Analiz Ediliyor...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- API Sonuç Ekranı (Başlangıçta Gizli) -->
+                <div id="resultDashboardCard" class="result-card hidden">
+                    <div class="result-header">
+                        <i id="resultIcon" class="fa-solid fa-circle-info"></i>
+                        <h3 id="resultTitle">Sonuç Bekleniyor...</h3>
+                    </div>
+                    
+                    <div class="result-body">
+                        <div class="score-container">
+                            <span class="score-label">Temerrüt (Ödememe) Riski</span>
+                            <span id="resultScore" class="score-value">%0.0</span>
+                        </div>
+                        
+                        <!-- Dinamik Dolum Çubuğu (Progress Bar) -->
+                        <div class="progress-bar-bg">
+                            <div id="resultProgressBar" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="page-footer">
+                <p>&copy; 2026 CreditScope A.Ş. Tüm Hakları Saklıdır. Modeller XGBoost Engine ile çalışmaktadır.</p>
+            </footer>
+
+        </div>
+    </main>
 
     <script src="app.js"></script>
+    <script>
+        // Formu temizle butonu işlevi
+        document.querySelector('.btn-secondary').addEventListener('click', () => {
+            document.getElementById('loanForm').reset();
+            const resultCard = document.getElementById('resultDashboardCard');
+            if (resultCard) {
+                resultCard.classList.add('hidden');
+                resultCard.classList.remove('status-safe', 'status-danger');
+            }
+        });
+    </script>
 </body>
 </html>
