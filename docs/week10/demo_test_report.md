@@ -7,6 +7,7 @@
 | Düşük Risk | Onaylanabilir Profil | Onaylanabilir Profil | %8.24 | %4.81 | Geçti |
 | Manuel İnceleme | Manuel İnceleme | Manuel İnceleme | %40.01 | %48.02 | Geçti |
 | Yüksek Risk | Manuel İnceleme | Manuel İnceleme | %58.04 | %92.11 | Geçti |
+| Güçlü Skor, Zayıf İstihdam | Manuel İnceleme | Manuel İnceleme | %26.68 | %24.54 | Geçti |
 
 ## Senaryo Yorumları
 
@@ -34,6 +35,14 @@
 - Uygulanan kurallar: high_dti, weak_credit_score, unstable_employment
 - Yorum: Model skoru %58.04, iş kuralları sonrası %92.11. DTI 0.9444, düşük kredi notu ve istihdam sinyali yüksek risk davranışını gösteriyor.
 
+### Güçlü Skor, Zayıf İstihdam
+
+- Gelir: `68000`, kredi tutarı: `30000`, kredi notu: `780`
+- İstihdam: `Full-time`, çalışma süresi: `3` ay, kefil: `No`
+- API kararı: **Manuel İnceleme**
+- Uygulanan kurallar: strong_credit_score, unstable_employment
+- Yorum: Model skoru %26.68, iş kuralları sonrası %24.54. Güçlü kredi notuna rağmen kısa çalışma geçmişi profili manuel inceleme bandında tutuyor.
+
 
 ## API ve Statik Dosya Kontrolleri
 
@@ -43,10 +52,11 @@
 | css | GET /static/style.css?v=20260419-week10 | 200 | Geçti |
 | js | GET /static/script.js?v=20260419-week10 | 200 | Geçti |
 | predict_low_risk | POST /predict | 200 | Geçti |
+| predict_edge_case | POST /predict | 200 | Geçti |
 
 ## UI Kabul Kriterleri
 
-- Üç demo senaryosu formu otomatik doldurur.
+ - Düşük risk, manuel inceleme, yüksek risk ve edge-case senaryoları formu otomatik doldurur.
 - DTI, kredi/gelir oranı, aylık taksit ve kredi segmenti anlık hesaplanır.
 - `/predict` sonucu sağ karar paneline yansır.
 - Model skoru, düzeltilmiş skor, eşik ve DTI ayrı gösterilir.

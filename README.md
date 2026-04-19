@@ -12,12 +12,19 @@ CreditScope/
 |-- preprocessing.py          # Shared training and inference preprocessing
 |-- training.py               # SMOTE + optimized XGBoost training
 |-- shap_analysis.py          # FP/FN error analysis and SHAP outputs
+|-- tools/
+|   `-- week10_demo_eval.py  # Final UI/API/demo validation script
 |-- Loan_default.csv          # Source dataset
 |-- xgboost_optimized.pkl     # Active model used by the API
 |-- scaler.pkl                # Active scaler used by the API
 |-- feature_names.pkl         # Active model feature order
 |-- decision_threshold.pkl    # Recall-oriented probability threshold
 |-- requirements.txt          # Python dependencies
+|-- docs/
+|   |-- week10/              # Results, demo report, and generated figures
+|   `-- week11/              # Final model selection and future work docs
+|-- presentations/
+|   `-- CreditScope_Week11_Final.pptx
 |-- static/
 |   |-- style.css
 |   `-- script.js
@@ -82,6 +89,20 @@ This creates:
 - `outputs/shap/shap_summary_False_Positives.png`
 - `outputs/shap/shap_summary_False_Negatives.png`
 - `outputs/shap/error_analysis_feature_means.csv`
+
+## Validation
+
+```bash
+py tools/week10_demo_eval.py
+```
+
+This refreshes the final demo and delivery evidence:
+
+- `outputs/week10/demo_predictions.json`
+- `outputs/week10/api_smoke_test.json`
+- `outputs/week10/model_comparison_metrics.csv`
+- `docs/week10/results_discussion.md`
+- `docs/week10/demo_test_report.md`
 
 ## Run
 
