@@ -1,0 +1,40 @@
+{
+  "run_timestamp": "2026-03-07T20:33:26",
+  "dataset_path": "C:\\Users\\baran\\OneDrive\\Desktop\\CreditScope-main\\Loan_default.csv",
+  "initial_shape": [
+    255347,
+    18
+  ],
+  "processed_shape": [
+    255347,
+    25
+  ],
+  "target_distribution": {
+    "0": 225694,
+    "1": 29653
+  },
+  "categorical_columns": [
+    "Education",
+    "EmploymentType",
+    "MaritalStatus",
+    "HasMortgage",
+    "HasDependents",
+    "LoanPurpose",
+    "HasCoSigner"
+  ],
+  "numerical_columns": [
+    "Age",
+    "Income",
+    "LoanAmount",
+    "CreditScore",
+    "MonthsEmployed",
+    "NumCreditLines",
+    "InterestRate",
+    "LoanTerm",
+    "DTIRatio"
+  ],
+  "total_missing_values_initial": 0,
+  "processed_dataset_path": "C:\\Users\\baran\\OneDrive\\Desktop\\CreditScope-main\\processed_data\\week3_processed_dataset.csv",
+  "scaler_path": "C:\\Users\\baran\\OneDrive\\Desktop\\CreditScope-main\\models\\week3_scaler.pkl",
+  "columns_path": "C:\\Users\\baran\\OneDrive\\Desktop\\CreditScope-main\\outputs\\week3\\week3_processed_columns.txt"
+}

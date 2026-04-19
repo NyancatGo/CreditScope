@@ -1,0 +1,5 @@
+Hafta 5 Recall Analizi
+- Dengeleme yöntemi: RandomOverSampling
+- Recall (önce): 0.072669
+- Recall (sonra): 0.672568
+- Recall değişimi: +0.599899

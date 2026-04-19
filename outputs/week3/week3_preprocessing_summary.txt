@@ -1,0 +1,12 @@
+Week 3 Preprocessing Summary
+- Timestamp: 2026-03-07T20:33:26
+- Dataset: C:\Users\baran\OneDrive\Desktop\CreditScope-main\Loan_default.csv
+- Initial shape: [255347, 18]
+- Processed shape: [255347, 25]
+- Target distribution: {0: 225694, 1: 29653}
+- Categorical columns: 7
+- Numerical columns: 9
+- Missing values (initial): 0
+- Processed CSV: C:\Users\baran\OneDrive\Desktop\CreditScope-main\processed_data\week3_processed_dataset.csv
+- Scaler file: C:\Users\baran\OneDrive\Desktop\CreditScope-main\models\week3_scaler.pkl
+- Encoded columns list: C:\Users\baran\OneDrive\Desktop\CreditScope-main\outputs\week3\week3_processed_columns.txt
