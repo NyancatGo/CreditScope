@@ -1,3 +1,0 @@
-             model  accuracy  precision   recall       f1
-    Rastgele Orman  0.886039   0.631206 0.045018 0.084042
-Lojistik Regresyon  0.885177   0.600601 0.033721 0.063857

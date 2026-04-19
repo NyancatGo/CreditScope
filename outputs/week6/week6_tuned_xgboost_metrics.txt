@@ -1,2 +1,0 @@
-          model_name  accuracy  precision   recall       f1
-xgboost_tuned_recall  0.691698   0.227601 0.691283 0.342451

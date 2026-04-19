@@ -1,134 +1,186 @@
-import pandas as pd
-import numpy as np
+from __future__ import annotations
+
+import json
+from datetime import datetime
+from pathlib import Path
+
+import joblib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
-import seaborn as sns
-
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
-def load_and_preprocess_data(filepath='Loan_default.csv'):
-    """Aşama 2'deki ön işleme adımlarını uygular ve veriyi hazır döndürür."""
-    # 1. Veri Yükleme
-    df = pd.read_csv(filepath)
-    
-    # Gereksiz kolonları çıkarma
-    if 'LoanID' in df.columns:
-        df = df.drop('LoanID', axis=1)
-        
-    # 2. Kategorik değişkenleri One-Hot Encoding ile dönüştürme
-    # Pandas >= 3.0 uyumluluğu için veri tiplerini kontrol edelim
-    categorical_cols = df.select_dtypes(include=['object', 'string']).columns.tolist()
-    if 'Default' in categorical_cols:
-        categorical_cols.remove('Default')
-        
-    df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
-    
-    # 3. Bağımlı (y) ve Bağımsız (X) Değişkenleri Ayırma
-    y = df_encoded['Default']
-    X = df_encoded.drop('Default', axis=1)
-    
-    # 4. Train/Test Bölme (Stratified)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42, stratify=y)
-    
-    # 5. StandardScaler ile Ölçeklendirme
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
-    
-    return X_train_scaled, X_test_scaled, y_train, y_test
+from preprocessing import ROOT_DIR, prepare_train_test
 
-def evaluate_model(y_true, y_pred, model_name):
-    """Modelin başarı metriklerini hesaplar ve ekrana yazdırır."""
-    accuracy = accuracy_score(y_true, y_pred)
-    precision = precision_score(y_true, y_pred)
-    recall = recall_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred)
-    
-    print(f"--- {model_name} Sonuçları ---")
-    print(f"Accuracy : {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall   : {recall:.4f}  <-- Riskli müşteriyi yakalama gücü (Önemli!)")
-    print(f"F1-Score : {f1:.4f}\n")
-    return [accuracy, precision, recall, f1]
 
-def plot_confusion_matrix(y_true, y_pred, model_name, ax):
-    """Confusion Matrix'i heatmap olarak çizer."""
-    cm = confusion_matrix(y_true, y_pred)
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
-    ax.set_title(f'{model_name} Confusion Matrix')
-    ax.set_xlabel('Tahmin Edilen (Predicted)')
-    ax.set_ylabel('Gerçek (Actual)')
-    
-def main():
-    print("Veri yükleniyor ve ön işlemler (Aşama 2) tekrarlanıyor...")
+OPTIMIZED_XGB_PARAMS = {
+    "learning_rate": 0.08,
+    "max_depth": 3,
+    "n_estimators": 220,
+    "subsample": 0.7,
+    "colsample_bytree": 0.85,
+    "gamma": 1.0,
+}
+TARGET_RECALL = 0.69
+
+
+def require_smote():
     try:
-        X_train, X_test, y_train, y_test = load_and_preprocess_data()
-    except FileNotFoundError:
-        print("Hata: 'Loan_default.csv' dosyası bulunamadı.")
-        return
+        from imblearn.over_sampling import SMOTE
+    except ImportError as exc:
+        raise RuntimeError(
+            "imbalanced-learn is required for SMOTE. "
+            "Install it with: py -m pip install imbalanced-learn"
+        ) from exc
+    return SMOTE
 
-    # Sınıf dengesizliğini kontrol etme (y_train üzerinden)
-    # Temerrüde Düşmeyen : 0, Temerrüde Düşen : 1
-    class_counts = y_train.value_counts()
-    neg_class = class_counts[0]
-    pos_class = class_counts[1]
-    
-    # XGBoost için scale_pos_weight parametresi (Negatif Sınıf Sayısı / Pozitif Sınıf Sayısı)
-    scale_pos_weight_val = neg_class / pos_class
-    print(f"\nSınıf Dağılımı: 0 (Ödedi): {neg_class}, 1 (Temerrüt): {pos_class}")
-    print(f"XGBoost için hesaplanan scale_pos_weight: {scale_pos_weight_val:.2f}\n")
 
-    print("Modeller tanımlanıyor ve class_weight='balanced' parametreleri ekleniyor...\n")
-    
-    # 1. Logistic Regression Model (Dengesiz veri çözümü)
-    log_reg = LogisticRegression(class_weight='balanced', random_state=42, max_iter=1000)
-    
-    # 2. Random Forest Model (Dengesiz veri çözümü)
-    # n_jobs=-1 ile tüm işlemci çekirdeklerini kullanarak eğitimi hızlandırıyoruz
-    rf_clf = RandomForestClassifier(class_weight='balanced', random_state=42, n_jobs=-1, n_estimators=100)
-    
-    # 3. XGBoost Model (Dengesiz veri çözümü)
-    xgb_clf = XGBClassifier(scale_pos_weight=scale_pos_weight_val, random_state=42, n_jobs=-1, eval_metric='logloss')
+def find_threshold_for_target_recall(
+    y_true: pd.Series,
+    y_proba,
+    target_recall: float = TARGET_RECALL,
+) -> float:
+    best_threshold = 0.50
+    best_score: tuple[float, float] | None = None
 
-    # Modelleri tek bir sözlükte tutalım
-    models = {
-        'Logistic Regression': log_reg,
-        'Random Forest': rf_clf,
-        'XGBoost': xgb_clf
+    for threshold in [step / 1000 for step in range(100, 901)]:
+        y_pred = (y_proba >= threshold).astype(int)
+        recall = recall_score(y_true, y_pred, zero_division=0)
+        precision = precision_score(y_true, y_pred, zero_division=0)
+        score = (abs(recall - target_recall), -precision)
+        if best_score is None or score < best_score:
+            best_score = score
+            best_threshold = threshold
+
+    return best_threshold
+
+
+def evaluate_model(
+    model: XGBClassifier,
+    x_test: pd.DataFrame,
+    y_test: pd.Series,
+    threshold: float,
+) -> dict:
+    y_proba = model.predict_proba(x_test)[:, 1]
+    y_pred = (y_proba >= threshold).astype(int)
+    report = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
+    cm = confusion_matrix(y_test, y_pred)
+
+    return {
+        "metrics": {
+            "accuracy": float(accuracy_score(y_test, y_pred)),
+            "precision": float(precision_score(y_test, y_pred, zero_division=0)),
+            "recall": float(recall_score(y_test, y_pred, zero_division=0)),
+            "f1": float(f1_score(y_test, y_pred, zero_division=0)),
+            "mean_predicted_default_probability": float(y_proba.mean()),
+        },
+        "classification_report": report,
+        "confusion_matrix": cm,
     }
 
-    results = {}
-    
-    # Grafikler için Matplotlib figürü hazırlayalım (1 satır, 3 sütun)
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
-    
-    # Her bir modeli eğitme, tahmin etme ve sonuçları değerlendirme döngüsü
-    for idx, (model_name, model) in enumerate(models.items()):
-        print(f">>> {model_name} eğitiliyor... Lütfen bekleyin.")
-        # Eğit
-        model.fit(X_train, y_train)
-        
-        # Tahmin yap
-        y_pred = model.predict(X_test)
-        
-        # Metrikleri hesapla
-        results[model_name] = evaluate_model(y_test, y_pred, model_name)
-        
-        # Confusion Matrix grafiğini çiz (ax nesnesi ile)
-        plot_confusion_matrix(y_test, y_pred, model_name, axes[idx])
 
-    # Grafikleri göster (Bloke eden komut, kapatana kadar terminal bekler)
-    plt.tight_layout()
-    plt.show()
-    
-    # Tüm modellerin RECALL sonuçlarına göre genel bir özet
-    print("--- Özet Karşılaştırma (Recall Odaklı) ---")
-    for model_name, metrics in results.items():
-        print(f"{model_name:<20} | Recall: {metrics[2]:.4f} | F1-Score: {metrics[3]:.4f}")
+def save_confusion_matrix(cm, output_path: Path) -> None:
+    fig, ax = plt.subplots(figsize=(5, 4))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[0, 1])
+    disp.plot(ax=ax, colorbar=False, values_format="d")
+    ax.set_title("CreditScope Tuned XGBoost - Confusion Matrix")
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+
+
+def main() -> None:
+    output_dir = ROOT_DIR / "outputs" / "training"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    print("Preparing data with shared preprocessing...")
+    x_train, x_test, y_train, y_test, scaler, feature_names = prepare_train_test()
+
+    print(f"Train shape before SMOTE: {x_train.shape}")
+    print(f"Class balance before SMOTE: {y_train.value_counts().sort_index().to_dict()}")
+
+    SMOTE = require_smote()
+    sampler = SMOTE(random_state=42)
+    x_train_balanced, y_train_balanced = sampler.fit_resample(x_train, y_train)
+    x_train_balanced = pd.DataFrame(x_train_balanced, columns=feature_names)
+    y_train_balanced = pd.Series(y_train_balanced, name=y_train.name)
+
+    print(f"Train shape after SMOTE : {x_train_balanced.shape}")
+    print(f"Class balance after SMOTE : {y_train_balanced.value_counts().sort_index().to_dict()}")
+
+    model = XGBClassifier(
+        random_state=42,
+        n_jobs=-1,
+        eval_metric="logloss",
+        tree_method="hist",
+        verbosity=0,
+        **OPTIMIZED_XGB_PARAMS,
+    )
+
+    print(f"Training XGBoost with optimized params: {OPTIMIZED_XGB_PARAMS}")
+    model.fit(x_train_balanced, y_train_balanced)
+
+    y_proba = model.predict_proba(x_test)[:, 1]
+    decision_threshold = find_threshold_for_target_recall(y_test, y_proba)
+    result = evaluate_model(model, x_test, y_test, decision_threshold)
+    metrics = result["metrics"]
+
+    print("\nEvaluation")
+    print(f"Decision threshold: {decision_threshold:.3f}")
+    print(f"Accuracy : {metrics['accuracy']:.4f}")
+    print(f"Precision: {metrics['precision']:.4f}")
+    print(f"Recall   : {metrics['recall']:.4f}")
+    print(f"F1-score : {metrics['f1']:.4f}")
+
+    joblib.dump(model, ROOT_DIR / "xgboost_optimized.pkl")
+    joblib.dump(scaler, ROOT_DIR / "scaler.pkl")
+    joblib.dump(feature_names, ROOT_DIR / "feature_names.pkl")
+    joblib.dump(decision_threshold, ROOT_DIR / "decision_threshold.pkl")
+
+    metrics_path = output_dir / "training_metrics.json"
+    report_path = output_dir / "classification_report.csv"
+    cm_csv_path = output_dir / "confusion_matrix.csv"
+    cm_png_path = output_dir / "confusion_matrix.png"
+
+    metrics_payload = {
+        "run_timestamp": datetime.now().isoformat(timespec="seconds"),
+        "sampler": "SMOTE",
+        "optimized_params": OPTIMIZED_XGB_PARAMS,
+        "target_recall": TARGET_RECALL,
+        "decision_threshold": decision_threshold,
+        "feature_count": len(feature_names),
+        "feature_names": feature_names,
+        "metrics": metrics,
+    }
+    metrics_path.write_text(json.dumps(metrics_payload, indent=2), encoding="utf-8")
+    pd.DataFrame(result["classification_report"]).transpose().to_csv(report_path)
+    pd.DataFrame(
+        result["confusion_matrix"],
+        index=["actual_0", "actual_1"],
+        columns=["predicted_0", "predicted_1"],
+    ).to_csv(cm_csv_path)
+    save_confusion_matrix(result["confusion_matrix"], cm_png_path)
+
+    print("\nArtifacts saved")
+    print(f"Model          : {ROOT_DIR / 'xgboost_optimized.pkl'}")
+    print(f"Scaler         : {ROOT_DIR / 'scaler.pkl'}")
+    print(f"Feature names  : {ROOT_DIR / 'feature_names.pkl'}")
+    print(f"Threshold      : {ROOT_DIR / 'decision_threshold.pkl'}")
+    print(f"Metrics        : {metrics_path}")
+    print(f"Confusion plot : {cm_png_path}")
+
 
 if __name__ == "__main__":
     main()

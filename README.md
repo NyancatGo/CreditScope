@@ -1,118 +1,95 @@
-# 🏦 CreditScope  
-## Yapay Zeka Tabanlı Kredi Risk Analizi ve Karar Destek Sistemi
+# CreditScope
 
-CreditScope, bankacılık verileri üzerinde eğitilmiş gelişmiş makine öğrenmesi algoritmalarını kullanarak kredi başvurularının temerrüt (default) riskini öngören uçtan uca bir **Full-Stack Karar Destek Sistemi**dir.
+CreditScope is a compact credit default risk analysis project. It trains an XGBoost model, serves predictions with FastAPI, and provides a simple web UI for credit application scoring.
 
-> 🎯 Amaç: Bankaların finansal riskini minimize etmek için riskli müşterileri başvuru aşamasında tespit etmek.
+The project is recall-oriented: missing a truly risky customer is treated as more costly than sending an extra application to manual review.
 
----
+## Project Structure
 
-## 🚀 Proje Özeti
-
-Bu proje, yüksek sınıf dengesizliği (imbalanced data) içeren **255.000+ satırlık gerçekçi bankacılık verisi** üzerinde geliştirilmiştir.
-
-Modelin temel optimizasyon hedefi:
-
-- 📌 **Recall (Duyarlılık) skorunu maksimize etmek**
-- 📌 Riskli müşterileri mümkün olduğunca erken tespit etmek
-- 📌 Bankanın temerrüt kaynaklı finansal zararını azaltmak
-
----
-
-## 🛠️ Teknik Yığın (Tech Stack)
-
-### 🤖 Model & Veri Bilimi
-- **Model:** XGBoost (Hyperparameter Optimized)
-- **Optimizasyon:** RandomizedSearchCV
-- **Kütüphaneler:**
-  - Pandas
-  - Scikit-learn
-  - Joblib
-  - Matplotlib / Seaborn
-
-### ⚙️ Backend
-- FastAPI (Python)
-- RESTful API mimarisi
-- Gerçek zamanlı tahmin üretimi
-
-### 🎨 Frontend
-- HTML5
-- CSS3 (Modern UI)
-- JavaScript (Fetch API)
-
----
-
-## 📊 Model Performansı
-
-Model, `RandomizedSearchCV` ile hiperparametre optimizasyonuna tabi tutulmuş ve bankacılık risk yönetimi için en uygun denge noktasına getirilmiştir.
-
-| Metrik | Skor | Açıklama |
-|--------|------|----------|
-| **Recall** | **%69.23** | Riskli müşterilerin yakalanma oranı (Temel odak) |
-| **Accuracy** | **%68.80** | Genel doğru tahmin oranı |
-| **Precision** | **%22.54** | Riskli denilenlerin gerçekten riskli çıkma oranı |
-| **F1-Score** | **%34.01** | Precision & Recall dengesi |
-
-> ⚠️ Not: Model özellikle **Recall optimizasyonuna** odaklanmıştır. Bankacılık senaryosunda riskli müşteriyi kaçırmak, yanlış pozitif üretmekten daha maliyetlidir.
-
----
-
-## 🏗️ Sistem Mimarisi
-
-Proje iki ana katmandan oluşmaktadır:
-
-### 1️⃣ AI Service (Backend)
-- Kaydedilmiş `.pkl` modeli kullanır
-- Gerçek zamanlı tahmin üretir
-- REST API üzerinden JSON formatında sonuç döner
-
-### 2️⃣ Web Interface (Frontend)
-- Kullanıcıdan kredi başvuru bilgilerini alır
-- Backend API'ye gönderir
-- Sonucu dinamik olarak arayüzde gösterir
-
-
-## 📁 Proje Yapısı
-
-```
+```text
 CreditScope/
-│
-├── api.py                  # FastAPI backend uygulaması
-├── model.pkl               # Eğitilmiş XGBoost modeli
-├── scaler.pkl              # Feature scaling için kaydedilmiş scaler
-├── requirements.txt        # Python bağımlılıkları
-│
-├── notebooks/
-│   └── model_training.ipynb   # Model geliştirme ve analiz süreci
-│
-├── static/
-│   ├── style.css           # Arayüz stil dosyası
-│   └── script.js           # Frontend JavaScript (Fetch API)
-│
-├── templates/
-│   └── index.html          # Kullanıcı arayüzü
-│
-└── README.md               # Proje dokümantasyonu
+|-- api.py                    # FastAPI app, UI serving, business rules
+|-- preprocessing.py          # Shared training and inference preprocessing
+|-- training.py               # SMOTE + optimized XGBoost training
+|-- shap_analysis.py          # FP/FN error analysis and SHAP outputs
+|-- Loan_default.csv          # Source dataset
+|-- xgboost_optimized.pkl     # Active model used by the API
+|-- scaler.pkl                # Active scaler used by the API
+|-- feature_names.pkl         # Active model feature order
+|-- decision_threshold.pkl    # Recall-oriented probability threshold
+|-- requirements.txt          # Python dependencies
+|-- static/
+|   |-- style.css
+|   `-- script.js
+`-- templates/
+    `-- index.html
 ```
 
+Generated reports and plots are written to `outputs/` when training or SHAP analysis runs. That folder is intentionally ignored by git.
 
-## ⚙️ Kurulum ve Çalıştırma
+## Model Logic
 
-### 1️⃣ Gereksinimlerin Yüklenmesi
+Shared feature engineering in `preprocessing.py` creates:
+
+- `DTIRatio = LoanAmount / Income`
+- `Age_Income_Interaction = Age * Income`
+
+The API recalculates `DTIRatio` from raw `LoanAmount` and `Income`, so the frontend does not need to be trusted as the source of truth.
+
+## Business Rules
+
+`api.py` applies a transparent post-model rule layer:
+
+| Rule | Adjustment |
+| --- | --- |
+| `CreditScore >= 750` | Reduce risk by 20% |
+| `DTIRatio <= 0.35` | Reduce risk by 10% |
+| Full-time employment for at least 36 months | Reduce risk by 10% |
+| Co-signer present | Reduce risk by 10% |
+| `DTIRatio >= 0.50` | Increase risk by 20% |
+| `CreditScore < 600` | Increase risk by 15% |
+| Unemployed or employed less than 6 months | Increase risk by 15% |
+
+The `/predict` response returns the raw model probability, adjusted probability, calculated DTI, decision threshold, and the applied rule list.
+
+## Setup
 
 ```bash
-pip install fastapi uvicorn pandas scikit-learn xgboost joblib
+py -m pip install -r requirements.txt
 ```
-### 2️⃣ API'nin Başlatılması
-```bash
-uvicorn api:app --reload
-API varsayılan olarak şu adreste çalışacaktır: http://localhost:8000
-```
+
+## Train
 
 ```bash
-### 3️⃣ Arayüzün Açılması
-
-index.html dosyasını herhangi bir modern tarayıcıda açarak sistemi kullanmaya başlayabilirsiniz.
+py training.py
 ```
 
-Bu proje BTS324 Bitirme Projesi kapsamında geliştirilmiştir.
+This refreshes:
+
+- `xgboost_optimized.pkl`
+- `scaler.pkl`
+- `feature_names.pkl`
+- `decision_threshold.pkl`
+
+## Explainability
+
+```bash
+py shap_analysis.py
+```
+
+This creates:
+
+- `outputs/shap/shap_summary_False_Positives.png`
+- `outputs/shap/shap_summary_False_Negatives.png`
+- `outputs/shap/error_analysis_feature_means.csv`
+
+## Run
+
+```bash
+py -m uvicorn api:app --reload
+```
+
+Open:
+
+- UI: http://127.0.0.1:8000/
+- API docs: http://127.0.0.1:8000/docs
