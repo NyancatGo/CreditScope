@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CreditScope{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css?v={{ asset_version }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="side-rail">
+            <a class="brand-lockup" href="/" aria-label="CreditScope">
+                <span class="brand-icon"><i class="fa-solid fa-building-columns"></i></span>
+                <span>
+                    <strong>CreditScope</strong>
+                    <small>Risk AI</small>
+                </span>
+            </a>
+
+            <nav class="rail-nav" aria-label="Ana menü">
+                {% for item in nav_items %}
+                <a href="{{ item.href }}" {% if active == item.key %}class="active" aria-current="page"{% endif %}>
+                    <i class="fa-solid {{ item.icon }}"></i><span>{{ item.label }}</span>
+                </a>
+                {% endfor %}
+            </nav>
+
+            <div class="rail-status">
+                <span class="pulse-dot"></span>
+                <div>
+                    <strong>Servis Aktif</strong>
+                    <small>FastAPI / XGBoost</small>
+                </div>
+            </div>
+        </aside>
+
+        <main class="workspace">
+            <header class="command-bar">
+                <div class="search-control">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" placeholder="Başvuru, müşteri veya portföy ara" disabled>
+                </div>
+                <div class="command-actions">
+                    <span class="system-pill"><i class="fa-solid fa-circle-check"></i> Model hazır</span>
+                    <span class="branch-pill"><i class="fa-solid fa-location-dot"></i> Merkez Şube #001</span>
+                </div>
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

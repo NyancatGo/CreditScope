@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Genel Bakış — CreditScope{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <span class="section-kicker">Proje Özeti</span>
+        <h1>CreditScope Genel Bakış</h1>
+        <p>CreditScope, kredi başvurularını recall odaklı bir XGBoost modeli ve iş kuralları katmanıyla değerlendiren uçtan uca bir karar destek prototipidir. Amaç, riskli müşteriyi kaçırmamak ve manuel incelemeye düşecek profilleri şeffaf biçimde gerekçelendirmektir.</p>
+    </div>
+</section>
+
+<section class="metric-strip" aria-label="Final metrikler">
+    <article class="metric-card"><span>Recall</span><strong>{{ "%.4f"|format(metrics.recall) }}</strong><small>Hedef bandında</small></article>
+    <article class="metric-card"><span>Accuracy</span><strong>{{ "%.4f"|format(metrics.accuracy) }}</strong><small>Dondurulmuş baseline</small></article>
+    <article class="metric-card"><span>F1</span><strong>{{ "%.4f"|format(metrics.f1) }}</strong><small>Precision-recall dengesi</small></article>
+    <article class="metric-card accent"><span>Threshold</span><strong>{{ "%.3f"|format(metrics.threshold) }}</strong><small>Kalibre karar eşiği</small></article>
+</section>
+
+<section class="content-grid">
+    <article class="content-card">
+        <div class="mini-head"><i class="fa-solid fa-compass"></i><h3>Proje Amacı</h3></div>
+        <p>Banka portföyündeki temerrüt riskini minimize eden; modelin riskli gördüğü profilleri açıklanabilir kurallarla destekleyen; kredi uzmanının son kararını kolaylaştıran bir arayüz kurmak.</p>
+    </article>
+    <article class="content-card">
+        <div class="mini-head"><i class="fa-solid fa-bullseye"></i><h3>Neden Recall Odaklı?</h3></div>
+        <p>Temerrüdü kaçırmanın maliyeti, fazla inceleme yapmanın maliyetinden büyüktür. Bu nedenle threshold <strong>{{ "%.3f"|format(metrics.threshold) }}</strong> değerine kalibre edilmiş; recall hedefi <strong>{{ "%.2f"|format(metrics.recall_target) }}</strong>, alt sınırı <strong>{{ "%.2f"|format(metrics.recall_floor) }}</strong> olarak korunmuştur.</p>
+    </article>
+    <article class="content-card">
+        <div class="mini-head"><i class="fa-solid fa-layer-group"></i><h3>Final Teknik Baseline</h3></div>
+        <ul class="tight-list">
+            <li><strong>Ana model:</strong> Tuned XGBoost</li>
+            <li><strong>Dengeleme:</strong> SMOTE</li>
+            <li><strong>Kural katmanı:</strong> {{ rule_count }} business rule</li>
+            <li><strong>Feature eng.:</strong> DTIRatio, Age_Income_Interaction</li>
+        </ul>
+    </article>
+    <article class="content-card">
+        <div class="mini-head"><i class="fa-solid fa-diagram-project"></i><h3>Sistem Akışı</h3></div>
+        <p>Başvuru → Feature engineering → Scaler → XGBoost → Business rules → Kalibre eşik → Karar. Tüm adımlar <code>/predict</code> yanıtında ayrık alanlar olarak döner; ham skor ve düzeltilmiş skor her zaman denetlenebilir.</p>
+    </article>
+</section>
+
+<section class="nav-grid">
+    <a class="nav-card" href="/demo-senaryolari">
+        <i class="fa-solid fa-file-signature"></i>
+        <strong>Demo Senaryoları</strong>
+        <span>4 doğrulanmış vaka üzerinde karar akışını görün.</span>
+    </a>
+    <a class="nav-card" href="/">
+        <i class="fa-solid fa-shield-halved"></i>
+        <strong>Risk Kokpiti</strong>
+        <span>Canlı başvuru verisiyle modele tahmin yaptırın.</span>
+    </a>
+    <a class="nav-card" href="/model-izleme">
+        <i class="fa-solid fa-chart-simple"></i>
+        <strong>Model İzleme</strong>
+        <span>Son doğrulanmış metrikler, confusion matrix, SHAP.</span>
+    </a>
+    <a class="nav-card" href="/kurallar">
+        <i class="fa-solid fa-sliders"></i>
+        <strong>Kurallar</strong>
+        <span>Riski azaltan ve artıran 7 kuralın mantığı.</span>
+    </a>
+</section>
+{% endblock %}

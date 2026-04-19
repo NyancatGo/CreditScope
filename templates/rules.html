@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Kurallar — CreditScope{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <span class="section-kicker">Business Rule Engine</span>
+        <h1>İş Kuralları Katmanı</h1>
+        <p>Model çıktısı, ham olasılık ile sınırlı kalmaz; aşağıdaki 7 kural ham skoru çarpan bazlı olarak düzeltir ve sonuç eşik <strong>{{ "%.3f"|format(threshold) }}</strong> ile karara çevrilir. Rule sürümü: <code>{{ rule_version }}</code>.</p>
+    </div>
+</section>
+
+<section class="rule-flow">
+    <div class="flow-step"><span>1</span><strong>Model Skoru</strong><small>XGBoost predict_proba</small></div>
+    <i class="fa-solid fa-arrow-right"></i>
+    <div class="flow-step"><span>2</span><strong>Kural Çarpanları</strong><small>7 kural zinciri</small></div>
+    <i class="fa-solid fa-arrow-right"></i>
+    <div class="flow-step"><span>3</span><strong>Düzeltilmiş Skor</strong><small>[0, 1] aralığına clip</small></div>
+    <i class="fa-solid fa-arrow-right"></i>
+    <div class="flow-step accent"><span>4</span><strong>Karar</strong><small>≥ {{ "%.3f"|format(threshold) }} → Manuel İnceleme</small></div>
+</section>
+
+<section class="rule-columns">
+    <article class="rule-column rule-column-reduce">
+        <header>
+            <i class="fa-solid fa-shield-check"></i>
+            <h2>Riski Azaltan Kurallar</h2>
+        </header>
+        {% for r in reduce_rules %}
+        <div class="rule-row">
+            <div class="rule-row-head">
+                <strong>{{ r.label }}</strong>
+                <span class="rule-tag reduce">× {{ "%.2f"|format(r.multiplier) }}</span>
+            </div>
+            <code>{{ r.condition }}</code>
+            <p>{{ r.impact }}</p>
+        </div>
+        {% endfor %}
+    </article>
+
+    <article class="rule-column rule-column-increase">
+        <header>
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h2>Riski Artıran Kurallar</h2>
+        </header>
+        {% for r in increase_rules %}
+        <div class="rule-row">
+            <div class="rule-row-head">
+                <strong>{{ r.label }}</strong>
+                <span class="rule-tag increase">× {{ "%.2f"|format(r.multiplier) }}</span>
+            </div>
+            <code>{{ r.condition }}</code>
+            <p>{{ r.impact }}</p>
+        </div>
+        {% endfor %}
+    </article>
+</section>
+
+<section class="content-card">
+    <div class="mini-head"><i class="fa-solid fa-circle-info"></i><h3>Neden Bu Katman?</h3></div>
+    <p>Kural katmanı, modelin kaçırmayı göze alamayacağı durumlarda güvenlik payı bırakır. Her <code>/predict</code> yanıtı ham model skorunu ve düzeltilmiş skoru ayrı döner; böylece her düzeltme denetlenebilir ve geri alınabilir kalır.</p>
+</section>
+{% endblock %}

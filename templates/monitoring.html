@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Model İzleme — CreditScope{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <span class="section-kicker">Son Doğrulanmış Snapshot</span>
+        <h1>Model İzleme</h1>
+        <p>Hafta 11'de dondurulan final XGBoost hattına ait metrikler, model karşılaştırması, confusion matrix ve SHAP hata analizleri.</p>
+    </div>
+</section>
+
+<section class="metric-strip" aria-label="Final metrikler">
+    <article class="metric-card"><span>Accuracy</span><strong>{{ "%.4f"|format(metrics.accuracy) }}</strong><small>Kabul</small></article>
+    <article class="metric-card"><span>Precision</span><strong>{{ "%.4f"|format(metrics.precision) }}</strong><small>Bilgi amaçlı</small></article>
+    <article class="metric-card accent"><span>Recall</span><strong>{{ "%.4f"|format(metrics.recall) }}</strong><small>Hedef bandında</small></article>
+    <article class="metric-card"><span>F1</span><strong>{{ "%.4f"|format(metrics.f1) }}</strong><small>Kabul</small></article>
+</section>
+
+<section class="content-grid">
+    <article class="content-card wide">
+        <div class="mini-head"><i class="fa-solid fa-table"></i><h3>Model Karşılaştırması</h3></div>
+        <table class="data-table">
+            <thead>
+                <tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1</th></tr>
+            </thead>
+            <tbody>
+                {% for m in comparison %}
+                <tr>
+                    <td><strong>{{ m.name }}</strong></td>
+                    <td>{{ "%.4f"|format(m.accuracy) }}</td>
+                    <td>{{ "%.4f"|format(m.precision) }}</td>
+                    <td>{{ "%.4f"|format(m.recall) }}</td>
+                    <td>{{ "%.4f"|format(m.f1) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+
+    <article class="content-card">
+        <div class="mini-head"><i class="fa-solid fa-grid-2"></i><h3>Confusion Matrix</h3></div>
+        <div class="confusion-grid">
+            <div class="cm-cell cm-tn"><span>True Negative</span><strong>{{ confusion.true_negative }}</strong></div>
+            <div class="cm-cell cm-fp"><span>False Positive</span><strong>{{ confusion.false_positive }}</strong></div>
+            <div class="cm-cell cm-fn"><span>False Negative</span><strong>{{ confusion.false_negative }}</strong></div>
+            <div class="cm-cell cm-tp"><span>True Positive</span><strong>{{ confusion.true_positive }}</strong></div>
+        </div>
+        <p class="muted-note">Recall odaklı kurguyla uyumlu dağılım: FN sayısı minimize edilmiş, FP vakaları manuel inceleme ile eleniyor.</p>
+    </article>
+</section>
+
+<section class="figure-grid">
+    <figure class="figure-card">
+        <figcaption>Model Karşılaştırma Grafiği</figcaption>
+        <img src="/static/figures/model_comparison_grouped_bar_week10.png?v={{ asset_version }}" alt="Model karşılaştırma grafiği" loading="lazy">
+    </figure>
+    <figure class="figure-card">
+        <figcaption>Confusion Matrix</figcaption>
+        <img src="/static/figures/confusion_matrix_week10.png?v={{ asset_version }}" alt="Confusion matrix" loading="lazy">
+    </figure>
+    <figure class="figure-card">
+        <figcaption>SHAP — False Positive</figcaption>
+        <img src="/static/figures/shap_false_positive_week10.png?v={{ asset_version }}" alt="SHAP false positive analizi" loading="lazy">
+    </figure>
+    <figure class="figure-card">
+        <figcaption>SHAP — False Negative</figcaption>
+        <img src="/static/figures/shap_false_negative_week10.png?v={{ asset_version }}" alt="SHAP false negative analizi" loading="lazy">
+    </figure>
+</section>
+{% endblock %}

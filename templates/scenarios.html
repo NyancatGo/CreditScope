@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Demo Senaryoları — CreditScope{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div>
+        <span class="section-kicker">Doğrulanmış Vakalar</span>
+        <h1>Demo Senaryoları</h1>
+        <p>Hafta 10 ve Hafta 11 doğrulama hattında çalıştırılmış dört senaryo; model skoru, kural düzeltmesi ve karar sonucu birlikte gösterilir.</p>
+    </div>
+</section>
+
+<section class="scenario-grid">
+    {% for s in scenarios %}
+    <article class="scenario-card {% if s.expected == s.actual %}scenario-pass{% else %}scenario-fail{% endif %}">
+        <header class="scenario-head">
+            <div>
+                <span class="section-kicker">{{ s.key|upper }}</span>
+                <h2>{{ s.title }}</h2>
+            </div>
+            <span class="scenario-badge"><i class="fa-solid fa-circle-check"></i> Geçti</span>
+        </header>
+
+        <div class="scenario-scores">
+            <div><span>Model Skoru</span><strong>%{{ "%.2f"|format(s.model_score) }}</strong></div>
+            <div><span>Düzeltilmiş</span><strong>%{{ "%.2f"|format(s.adjusted_score) }}</strong></div>
+            <div><span>DTI</span><strong>{{ "%.4f"|format(s.dti) }}</strong></div>
+        </div>
+
+        <div class="scenario-decisions">
+            <div><span>Beklenen</span><strong>{{ s.expected }}</strong></div>
+            <div><span>Gerçek</span><strong>{{ s.actual }}</strong></div>
+        </div>
+
+        <div class="scenario-profile">
+            {% for key, value in s.profile.items() %}
+            <div><span>{{ key }}</span><strong>{{ value }}</strong></div>
+            {% endfor %}
+        </div>
+
+        <div class="scenario-rules">
+            <span class="scenario-rules-label">Uygulanan Kurallar</span>
+            <div class="rule-pill-row">
+                {% for r in s.applied_rules %}
+                <span class="rule-pill">{{ r.replace('_', ' ') }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p class="scenario-comment">{{ s.comment }}</p>
+    </article>
+    {% endfor %}
+</section>
+{% endblock %}

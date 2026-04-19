@@ -29,8 +29,25 @@ CreditScope/
 |   |-- style.css
 |   `-- script.js
 `-- templates/
-    `-- index.html
+    |-- base.html             # Shared shell (sidebar, command bar)
+    |-- cockpit.html          # Risk Kokpiti — live prediction screen
+    |-- overview.html         # Genel Bakış — project summary
+    |-- scenarios.html        # Demo Senaryoları — validated cases
+    |-- monitoring.html       # Model İzleme — metrics, confusion matrix, SHAP
+    `-- rules.html            # Kurallar — business rule engine
 ```
+
+## Pages
+
+The UI is multi-page and served by FastAPI + Jinja2:
+
+| Route | Page |
+| --- | --- |
+| `/` | Risk Kokpiti (live `/predict`) |
+| `/genel-bakis` | Genel Bakış |
+| `/demo-senaryolari` | Demo Senaryoları |
+| `/model-izleme` | Model İzleme |
+| `/kurallar` | Kurallar |
 
 Generated reports and plots are written to `outputs/` when training or SHAP analysis runs. That folder is intentionally ignored by git.
 
@@ -112,5 +129,9 @@ py -m uvicorn api:app --reload
 
 Open:
 
-- UI: http://127.0.0.1:8000/
+- Risk Kokpiti: http://127.0.0.1:8000/
+- Genel Bakış: http://127.0.0.1:8000/genel-bakis
+- Demo Senaryoları: http://127.0.0.1:8000/demo-senaryolari
+- Model İzleme: http://127.0.0.1:8000/model-izleme
+- Kurallar: http://127.0.0.1:8000/kurallar
 - API docs: http://127.0.0.1:8000/docs

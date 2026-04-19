@@ -1,4 +1,8 @@
 const form = document.getElementById("loanForm");
+if (!form) {
+    // Cockpit form is not on this page; skip cockpit-specific wiring.
+} else {
+
 const resetButton = document.getElementById("resetForm");
 const presetButtons = document.querySelectorAll("[data-preset]");
 
@@ -302,3 +306,5 @@ form.addEventListener("submit", async (event) => {
 });
 
 resetResultPanel();
+
+}

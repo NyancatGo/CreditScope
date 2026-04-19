@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Risk Kokpiti — CreditScope{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <span class="section-kicker">Canlı Karar Ekranı</span>
+        <h1>Kredi Risk Kokpiti</h1>
+        <p>Başvuru verisi, model skoru, iş kuralları ve karar notu tek ekranda birleşir.</p>
+        <div class="hero-actions" aria-label="Örnek senaryolar">
+            <button type="button" class="scenario-button" data-preset="safe"><i class="fa-solid fa-shield-check"></i> Düşük Risk</button>
+            <button type="button" class="scenario-button" data-preset="review"><i class="fa-solid fa-magnifying-glass-chart"></i> İnceleme</button>
+            <button type="button" class="scenario-button" data-preset="risky"><i class="fa-solid fa-triangle-exclamation"></i> Yüksek Risk</button>
+        </div>
+    </div>
+
+    <div class="hero-visual" aria-label="Risk dağılım grafiği">
+        <div class="risk-bars">
+            <span style="--bar: 42%; --tone: #2a9d8f"></span>
+            <span style="--bar: 68%; --tone: #457b9d"></span>
+            <span style="--bar: 54%; --tone: #f4a261"></span>
+            <span style="--bar: 78%; --tone: #7c3aed"></span>
+            <span style="--bar: 62%; --tone: #d95050"></span>
+            <span style="--bar: 48%; --tone: #0f766e"></span>
+        </div>
+        <div class="visual-caption">
+            <strong>Canlı portföy sinyali</strong>
+            <span>Recall odaklı karar eşiği</span>
+        </div>
+    </div>
+</section>
+
+<section class="model-strip" aria-label="Model metrikleri">
+    <article class="model-card">
+        <span>Recall</span>
+        <strong>0.690</strong>
+        <small>Riskli müşteriyi yakalama</small>
+    </article>
+    <article class="model-card">
+        <span>Threshold</span>
+        <strong>{{ "%.3f"|format(decision_threshold) }}</strong>
+        <small>Kalibre karar eşiği</small>
+    </article>
+    <article class="model-card">
+        <span>Feature</span>
+        <strong>25</strong>
+        <small>Model girdisi</small>
+    </article>
+    <article class="model-card accent">
+        <span>Rule Engine</span>
+        <strong>7</strong>
+        <small>İş kuralı aktif</small>
+    </article>
+</section>
+
+<section class="cockpit-grid">
+    <section class="application-panel">
+        <div class="panel-header">
+            <div>
+                <span class="section-kicker">Başvuru Profili</span>
+                <h2>Finansal ve demografik veri</h2>
+            </div>
+            <button type="button" class="reset-button" id="resetForm"><i class="fa-solid fa-arrow-rotate-right"></i> Sıfırla</button>
+        </div>
+
+        <form id="loanForm" class="loan-form">
+            <div class="form-band">
+                <div class="band-title">
+                    <i class="fa-solid fa-coins"></i>
+                    <h3>Finansal Güç</h3>
+                </div>
+                <div class="field-grid">
+                    <label class="field"><span>Yaş</span><input type="number" id="Age" name="Age" required min="18" placeholder="35"></label>
+                    <label class="field"><span>Yıllık Gelir ($)</span><input type="number" id="Income" name="Income" required placeholder="65000"></label>
+                    <label class="field"><span>Kredi Tutarı ($)</span><input type="number" id="LoanAmount" name="LoanAmount" required placeholder="15000"></label>
+                    <label class="field"><span>Kredi Notu</span><input type="number" id="CreditScore" name="CreditScore" required placeholder="720"></label>
+                    <label class="field"><span>Çalışma Süresi (Ay)</span><input type="number" id="MonthsEmployed" name="MonthsEmployed" required placeholder="48"></label>
+                    <label class="field"><span>Açık Kredi Kanalı</span><input type="number" id="NumCreditLines" name="NumCreditLines" required placeholder="3"></label>
+                    <label class="field"><span>Faiz Oranı (%)</span><input type="number" id="InterestRate" name="InterestRate" step="0.01" required placeholder="14.5"></label>
+                    <label class="field"><span>Kredi Vadesi (Ay)</span><input type="number" id="LoanTerm" name="LoanTerm" required placeholder="36"></label>
+                    <label class="field readonly-field"><span>DTI</span><input type="number" id="DTIRatio" name="DTIRatio" step="0.0001" readonly placeholder="Otomatik"></label>
+                </div>
+            </div>
+
+            <div class="form-band">
+                <div class="band-title">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                    <h3>Başvuru Niteliği</h3>
+                </div>
+                <div class="field-grid">
+                    <label class="field"><span>Eğitim Durumu</span>
+                        <select id="Education" name="Education" required>
+                            <option value="High School">Lise</option>
+                            <option value="Bachelor's">Lisans</option>
+                            <option value="Master's">Yüksek Lisans</option>
+                            <option value="PhD">Doktora</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Çalışma Şekli</span>
+                        <select id="EmploymentType" name="EmploymentType" required>
+                            <option value="Full-time">Tam Zamanlı</option>
+                            <option value="Part-time">Yarı Zamanlı</option>
+                            <option value="Self-employed">Serbest Çalışan</option>
+                            <option value="Unemployed">İşsiz</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Medeni Hal</span>
+                        <select id="MaritalStatus" name="MaritalStatus" required>
+                            <option value="Married">Evli</option>
+                            <option value="Single">Bekar</option>
+                            <option value="Divorced">Boşanmış</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>İpotek</span>
+                        <select id="HasMortgage" name="HasMortgage" required>
+                            <option value="Yes">Var</option>
+                            <option value="No">Yok</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Bakmakla Yükümlü Kişi</span>
+                        <select id="HasDependents" name="HasDependents" required>
+                            <option value="Yes">Var</option>
+                            <option value="No">Yok</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Kredi Amacı</span>
+                        <select id="LoanPurpose" name="LoanPurpose" required>
+                            <option value="Auto">Otomobil</option>
+                            <option value="Business">Ticari</option>
+                            <option value="Education">Eğitim</option>
+                            <option value="Home">Ev</option>
+                            <option value="Other">Diğer</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Kefil</span>
+                        <select id="HasCoSigner" name="HasCoSigner" required>
+                            <option value="Yes">Var</option>
+                            <option value="No">Yok</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="live-preview">
+                <article><span>DTI</span><strong id="liveDti">-</strong></article>
+                <article><span>Kredi / Gelir</span><strong id="liveLoanIncome">-</strong></article>
+                <article><span>Aylık Taksit</span><strong id="livePayment">-</strong></article>
+                <article><span>Kredi Segmenti</span><strong id="liveCreditBand">-</strong></article>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="submitBtn" class="primary-action">
+                    <span id="btnText"><i class="fa-solid fa-bolt"></i> Karar Skorunu Çalıştır</span>
+                    <span id="btnSpinner" class="hidden"><i class="fa-solid fa-circle-notch fa-spin"></i> Analiz ediliyor</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <aside class="decision-stack">
+        <section id="resultDashboardCard" class="decision-card">
+            <div class="decision-head">
+                <div>
+                    <span class="section-kicker">Karar Çıktısı</span>
+                    <h2 id="resultTitle">Analiz Bekliyor</h2>
+                </div>
+                <span id="resultIcon" class="decision-icon"><i class="fa-solid fa-gauge-high"></i></span>
+            </div>
+
+            <div class="risk-orbit">
+                <div class="risk-ring" id="riskRing">
+                    <div class="risk-core">
+                        <strong id="resultScore">%0.00</strong>
+                        <span>Temerrüt riski</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-spectrum">
+                <span class="spectrum-fill" id="spectrumFill"></span>
+                <span class="spectrum-marker" id="spectrumMarker"></span>
+            </div>
+
+            <div class="score-table">
+                <div><span>Model skoru</span><strong id="modelScore">%0.00</strong></div>
+                <div><span>Düzeltilmiş skor</span><strong id="adjustedScore">%0.00</strong></div>
+                <div><span>Eşik</span><strong id="thresholdScore">{{ "%.3f"|format(decision_threshold) }}</strong></div>
+                <div><span>DTI</span><strong id="dtiPreview">-</strong></div>
+            </div>
+        </section>
+
+        <section class="memo-card">
+            <div class="mini-head"><i class="fa-solid fa-clipboard-check"></i><h3>Karar Notu</h3></div>
+            <p id="decisionMemo">Başvuru çalıştırıldığında model skoru ve iş kurallarıyla birlikte karar notu üretilecek.</p>
+        </section>
+
+        <section class="rule-card">
+            <div class="mini-head"><i class="fa-solid fa-code-branch"></i><h3>Rule Impact</h3></div>
+            <div id="ruleList" class="rule-list">
+                <span class="empty-rule">Henüz kural çalışmadı</span>
+            </div>
+        </section>
+
+        <section class="signal-card">
+            <div class="mini-head"><i class="fa-solid fa-wave-square"></i><h3>Risk Sinyalleri</h3></div>
+            <div class="signal-grid">
+                <div><span class="dot green"></span>Skor kalitesi</div>
+                <div><span class="dot amber"></span>Gelir yükü</div>
+                <div><span class="dot blue"></span>İstihdam</div>
+                <div><span class="dot red"></span>Temerrüt eşiği</div>
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/script.js?v={{ asset_version }}"></script>
+{% endblock %}
