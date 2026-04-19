@@ -1,0 +1,264 @@
+<div style="width:100%; max-width:980px; margin:0 auto; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; color:#1f2937; line-height:1.65; background:#faf8f3;">
+
+  <div style="background:linear-gradient(135deg, #184d3a 0%, #23624b 100%); color:#ffffff; border-radius:20px; padding:30px 28px; margin:0 0 22px 0; box-sizing:border-box;">
+    <div style="font-size:12px; letter-spacing:1.8px; text-transform:uppercase; opacity:0.85; margin-bottom:8px;">
+      CreditScope / Hafta 11 Finalizasyon
+    </div>
+    <h1 style="margin:0 0 12px 0; font-size:32px; line-height:1.25;">
+      Final Model, Final Doğrulama ve Teslim Kapanışı
+    </h1>
+    <p style="margin:0; font-size:17px;">
+      Hafta 11'de proje yeniden tasarlanmadı; Hafta 10 sonunda çalışan sistem teknik olarak donduruldu, yeniden doğrulandı ve teslim seviyesine çıkarıldı.
+    </p>
+  </div>
+
+  <table role="presentation" style="width:100%; border-collapse:separate; border-spacing:12px; margin:0 0 18px 0;">
+    <tr>
+      <td style="width:50%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #2f7a55; border-radius:16px; padding:18px; vertical-align:top;">
+        <div style="font-size:28px; font-weight:700; color:#111827;">0.6901</div>
+        <div style="font-size:14px; color:#475569; margin-top:6px;">Final Recall</div>
+      </td>
+      <td style="width:50%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #d9a441; border-radius:16px; padding:18px; vertical-align:top;">
+        <div style="font-size:28px; font-weight:700; color:#111827;">0.231</div>
+        <div style="font-size:14px; color:#475569; margin-top:6px;">Decision Threshold</div>
+      </td>
+    </tr>
+    <tr>
+      <td style="width:50%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #4a6fa5; border-radius:16px; padding:18px; vertical-align:top;">
+        <div style="font-size:28px; font-weight:700; color:#111827;">4 / 4</div>
+        <div style="font-size:14px; color:#475569; margin-top:6px;">Demo Senaryosu Geçti</div>
+      </td>
+      <td style="width:50%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #d66c56; border-radius:16px; padding:18px; vertical-align:top;">
+        <div style="font-size:28px; font-weight:700; color:#111827;">5 / 5</div>
+        <div style="font-size:14px; color:#475569; margin-top:6px;">API Smoke Check</div>
+      </td>
+    </tr>
+  </table>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 12px 0; color:#184d3a; font-size:28px;">Hafta 11'de Ne Yapıldı?</h2>
+    <ul style="margin:0; padding-left:22px;">
+      <li>Final model hattı <strong>SMOTE + tuned XGBoost + threshold calibration + business rules</strong> olarak sabitlendi.</li>
+      <li>Eğitim, SHAP analizi ve demo doğrulama hattı yeniden çalıştırıldı.</li>
+      <li>Business rules yeniden yazılmadı; mevcut sürüm aynen korunarak dokümante edildi.</li>
+      <li>Sunum, final dokümantasyon ve kapanış anlatısı teslim bütünlüğüne göre tamamlandı.</li>
+    </ul>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:28px;">Final Teknik Baseline</h2>
+    <table style="width:100%; border-collapse:collapse; font-size:15px;">
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Ana model</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">XGBoost</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Sınıf dengesizliği yaklaşımı</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">SMOTE</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Karar eşiği</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">0.231</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Feature engineering</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">DTIRatio, Age_Income_Interaction</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Business rule version</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">default-review-2026-04-19</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>XGBoost parametreleri</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">learning_rate=0.08, max_depth=3, n_estimators=220, subsample=0.7, colsample_bytree=0.85, gamma=1.0</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px;"><strong>Final hedef</strong></td>
+        <td style="padding:10px 8px;">Recall odaklı, açıklanabilir ve rule-supported karar desteği</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 12px 0; color:#184d3a; font-size:28px;">Neden Final Model XGBoost Olarak Kaldı?</h2>
+    <p style="margin:0 0 14px 0;">
+      Logistic Regression recall tarafında güçlü bir benchmark üretmiş olsa da, final teslim modeli XGBoost olarak korunmuştur. Bunun nedeni CreditScope'un son halinin yalnızca ham sınıflandırma performansına göre değil; tuning süreci, explainability çıktıları, API/UI entegrasyonu ve production artifact uyumu üzerinden değerlendirilmesidir.
+    </p>
+    <ul style="margin:0; padding-left:22px;">
+      <li>SMOTE, optimize hiperparametreler ve recall hedefli threshold kalibrasyonu bu hatta tam uygulanmıştır.</li>
+      <li>SHAP tabanlı False Positive ve False Negative analizleri mevcut XGBoost artifact'leriyle üretilmiştir.</li>
+      <li>API, UI ve business-rule katmanı halihazırda bu model etrafında doğrulanmıştır.</li>
+      <li>Recall değeri <strong>0.6901</strong> ile hedeflenen <strong>0.69</strong> bandını pratik olarak karşılamıştır.</li>
+    </ul>
+    <div style="background:#f7faf8; border-left:5px solid #2f7a55; border-radius:12px; padding:14px 16px; margin-top:16px;">
+      <strong>Model comparison snapshot:</strong><br>
+      Logistic Regression Recall = <strong>0.6962</strong><br>
+      Random Forest Recall = <strong>0.4539</strong><br>
+      XGBoost Recall = <strong>0.6901</strong>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg, #fff8ec 0%, #ffffff 100%); border:1px solid #f1dfb4; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 12px 0; color:#8a5a00; font-size:28px;">SMOTE Teknik Zorluğu</h2>
+    <p style="margin:0 0 12px 0;">
+      Hafta 11 sunumunda özellikle vurgulanması gereken teknik nokta, veri setindeki sınıf dengesizliğinin yalnızca oversampling ile çözülemeyeceğidir.
+    </p>
+    <ul style="margin:0; padding-left:22px;">
+      <li>SMOTE yalnızca eğitim tarafında uygulanmıştır; aksi durumda veri sızıntısı riski oluşur.</li>
+      <li>Oversampling sonrası model davranışı doğrudan bırakılmamış, karar eşiği <strong>0.231</strong> seviyesine kalibre edilmiştir.</li>
+      <li>Asıl teknik zorluk, dengeleme sonrası deploy edilen karar hattının gerçek sistem davranışıyla uyumlu kalmasını sağlamaktır.</li>
+    </ul>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:28px;">Final Doğrulama Sonuçları</h2>
+    <table style="width:100%; border-collapse:collapse; font-size:15px; margin-bottom:16px;">
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Accuracy</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">0.6827</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Precision</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">0.2217</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Recall</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">0.6901</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>F1-score</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">0.3356</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Decision Threshold</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">0.231</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Kabul Durumu</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Recall hedef bandında</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px;"><strong>Artifact Durumu</strong></td>
+        <td colspan="3" style="padding:10px 8px;">Model artifact'leri yeniden üretildi ve API tarafından kullanılabilir durumda kaldı.</td>
+      </tr>
+    </table>
+
+    <div style="background:#f7faf8; border-radius:14px; padding:16px; margin-bottom:14px;">
+      <strong>Hata analizi özeti:</strong><br>
+      True Negative = <strong>30773</strong> |
+      False Positive = <strong>14366</strong> |
+      True Positive = <strong>4093</strong> |
+      False Negative = <strong>1838</strong>
+    </div>
+
+    <div style="background:#f8fafc; border-radius:14px; padding:16px;">
+      <strong>SHAP doğrulaması:</strong><br>
+      False Positive ve False Negative SHAP çıktıları ile error analysis summary dosyaları başarıyla üretildi.
+    </div>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:28px;">Demo ve API Kontrolü</h2>
+    <table style="width:100%; border-collapse:collapse; font-size:15px; margin-bottom:14px;">
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Senaryo</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Beklenen Karar</strong></td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;"><strong>Gerçek Karar</strong></td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Düşük Risk</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Onaylanabilir Profil</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Onaylanabilir Profil</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Manuel İnceleme</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Manuel İnceleme</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Manuel İnceleme</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Yüksek Risk</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Manuel İnceleme</td>
+        <td style="padding:10px 8px; border-bottom:1px solid #e5e7eb;">Manuel İnceleme</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px;">Güçlü Skor, Zayıf İstihdam</td>
+        <td style="padding:10px 8px;">Manuel İnceleme</td>
+        <td style="padding:10px 8px;">Manuel İnceleme</td>
+      </tr>
+    </table>
+
+    <ul style="margin:0; padding-left:22px;">
+      <li><code>GET /</code> -> 200</li>
+      <li><code>GET /static/style.css</code> -> 200</li>
+      <li><code>GET /static/script.js</code> -> 200</li>
+      <li><code>POST /predict</code> düşük risk senaryosu -> 200</li>
+      <li><code>POST /predict</code> edge-case senaryosu -> 200</li>
+    </ul>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:28px;">Business Rules Sabit Kalan Yapı</h2>
+
+    <div style="background:#f0f9f3; border-left:5px solid #2f7a55; border-radius:12px; padding:14px 16px; margin-bottom:12px;">
+      <strong>Riski azaltan kurallar</strong>
+      <ul style="margin:8px 0 0 0; padding-left:20px;">
+        <li>CreditScore &gt;= 750 -> temerrüt olasılığını %20 azalt</li>
+        <li>DTIRatio &lt;= 0.35 -> temerrüt olasılığını %10 azalt</li>
+        <li>En az 36 ay full-time çalışma -> temerrüt olasılığını %10 azalt</li>
+        <li>Kefil var -> temerrüt olasılığını %10 azalt</li>
+      </ul>
+    </div>
+
+    <div style="background:#fff3ef; border-left:5px solid #d66c56; border-radius:12px; padding:14px 16px;">
+      <strong>Riski artıran kurallar</strong>
+      <ul style="margin:8px 0 0 0; padding-left:20px;">
+        <li>DTIRatio &gt;= 0.50 -> temerrüt olasılığını %20 artır</li>
+        <li>CreditScore &lt; 600 -> temerrüt olasılığını %15 artır</li>
+        <li>İşsiz veya 6 aydan az çalışma süresi -> temerrüt olasılığını %15 artır</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:28px;">Future Work</h2>
+    <div style="background:#ffffff; border:1px solid #d8e6dc; border-left:5px solid #2f7a55; border-radius:12px; padding:14px 16px; margin-bottom:10px;">
+      Rule engine etkilerini veriyle kalibre etmek
+    </div>
+    <div style="background:#ffffff; border:1px solid #f1dfb4; border-left:5px solid #d9a441; border-radius:12px; padding:14px 16px; margin-bottom:10px;">
+      Maliyet-duyarlı threshold ve precision-recall optimizasyonu
+    </div>
+    <div style="background:#ffffff; border:1px solid #d8e1ef; border-left:5px solid #4a6fa5; border-radius:12px; padding:14px 16px; margin-bottom:10px;">
+      Monitoring ve drift takibi eklemek
+    </div>
+    <div style="background:#ffffff; border:1px solid #efcfc5; border-left:5px solid #d66c56; border-radius:12px; padding:14px 16px; margin-bottom:10px;">
+      Karar gerekçesi ekranını güçlendirmek
+    </div>
+    <div style="background:#ffffff; border:1px solid #d8e6dc; border-left:5px solid #23624b; border-radius:12px; padding:14px 16px;">
+      Daha geniş veri ve etik/regülasyon doğrulaması yapmak
+    </div>
+  </div>
+
+  <div style="background:#184d3a; color:#ffffff; border-radius:20px; padding:26px 28px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 10px 0; font-size:26px;">Hafta 11 Kapanış Cümlesi</h2>
+    <p style="margin:0; font-size:17px;">
+      CreditScope, Hafta 11 sonunda yalnızca iyi performans veren bir model değil; recall odaklı, açıklanabilir, rule-supported ve uçtan uca doğrulanmış bir kredi karar destek prototipi olarak teslim seviyesine ulaşmıştır.
+    </p>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:22px 20px; margin:0; box-sizing:border-box;">
+    <h2 style="margin:0 0 8px 0; color:#184d3a; font-size:24px; text-align:center;">Ek Kaynaklar</h2>
+    <p style="margin:0 0 16px 0; text-align:center; color:#475569; font-size:15px;">
+      Sunum sonrasında konuşma belgeleri ve podcast içeriği için aşağıdaki bağlantılar kullanılabilir.
+    </p>
+
+    <table role="presentation" style="width:100%; border-collapse:separate; border-spacing:12px 0;">
+      <tr>
+        <td style="width:50%; vertical-align:top;">
+          <a href="REPLACE_WITH_SPEECH_DOCS_LINK" style="display:block; text-align:center; padding:16px 20px; background:linear-gradient(135deg, #184d3a 0%, #23624b 100%); color:#ffffff; text-decoration:none; font-weight:700; font-size:16px; border-radius:999px;">
+            4 Konuşma Belgesi
+          </a>
+        </td>
+        <td style="width:50%; vertical-align:top;">
+          <a href="REPLACE_WITH_PODCAST_LINK" style="display:block; text-align:center; padding:16px 20px; background:linear-gradient(135deg, #d9a441 0%, #c98c20 100%); color:#ffffff; text-decoration:none; font-weight:700; font-size:16px; border-radius:999px;">
+            Podcast İçeriği
+          </a>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</div>
