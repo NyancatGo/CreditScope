@@ -11,6 +11,7 @@ Bu repo bir “model eğittim, skor aldım” çalışması değildir. CreditSco
 - [Proje Neyi Çözüyor?](#proje-neyi-çözüyor)
 - [Şu Anki Durum](#şu-anki-durum)
 - [Hafta 13 Final Öncesi Sağlamlaştırma](#hafta-13-final-öncesi-sağlamlaştırma)
+- [Hafta 14 Son Teslim Hazırlığı](#hafta-14-son-teslim-hazırlığı)
 - [Sistem Mimarisi](#sistem-mimarisi)
 - [Model Stratejisi](#model-stratejisi)
 - [Business Rule Engine](#business-rule-engine)
@@ -39,7 +40,7 @@ CreditScope doğrudan otomatik kredi onayı veren bir sistem gibi konumlandırı
 
 ## Şu Anki Durum
 
-Hafta 12 itibarıyla proje aşağıdaki seviyeye gelmiştir:
+Hafta 14 itibarıyla proje aşağıdaki seviyeye gelmiştir:
 
 | Alan | Durum |
 | --- | --- |
@@ -50,7 +51,7 @@ Hafta 12 itibarıyla proje aşağıdaki seviyeye gelmiştir:
 | API | `/predict` endpoint'i aktif ve business rules uyguluyor |
 | UI | 5 sayfalı FastAPI + Jinja2 arayüz aktif |
 | Demo | 4 doğrulanmış senaryo mevcut |
-| Dokümantasyon | Week 10, Week 11 ve Week 13 final öncesi dokümanları mevcut |
+| Dokümantasyon | Week 10, Week 11, Week 13 ve Week 14 final teslim dokümanları mevcut |
 
 ### Aktif Sayfalar
 
@@ -81,6 +82,19 @@ Hafta 13 ile birlikte şu üç kalite notu kapatılmıştır:
 - UI snapshot verileri `api.py` içine dağınık şekilde gömülü kalmak yerine tracked snapshot dosyasına taşındı.
 - Week 12 route'ları validation smoke test kapsamına eklendi.
 - Demo Senaryoları sayfasındaki başarı rozeti pass/fail durumuna göre koşullu hale getirildi.
+
+## Hafta 14 Son Teslim Hazırlığı
+
+Hafta 14, kod geliştirme haftası olarak değil; son doküman kontrolü, yedekleme ve sunum provası haftası olarak ele alınmıştır. Bu aşamada sistem davranışı değiştirilmemiş, mevcut final demo paketinin güvenli biçimde sunulması hedeflenmiştir.
+
+| Çıktı | Konum | Amaç |
+| --- | --- | --- |
+| Son doküman kontrol listesi | `docs/week14/final_document_checklist.md` | README, wiki, sunum ve raporların teslim öncesi kontrolünü sabitler |
+| Yedekleme manifesti | `docs/week14/backup_manifest.md` | Final pakete girmesi gereken kod, model, UI ve doküman dosyalarını listeler |
+| Sunum son prova planı | `docs/week14/presentation_rehearsal.md` | Demo sırasında açılacak sayfaları ve anlatılacak ana mesajları sıralar |
+| Wiki HTML | `docs/week14/week14_wiki_final.html` | Kısa ve sade Hafta 14 wiki içeriğini sunar |
+
+Hafta 14 sonunda proje "dokunma, bozma; kontrol et, yedekle, prova yap" moduna alınmıştır. Bundan sonraki değişiklikler yalnızca kırık link, yanlış dosya yolu veya demo sırasında görülen somut problem için yapılmalıdır.
 
 ## Sistem Mimarisi
 
@@ -527,6 +541,10 @@ Bu script final demo öncesinde şu kontrolleri yapar:
 | `docs/week13/demo_runbook.md` | Final demo akış planı |
 | `docs/week13/jury_questions.md` | Jüri soru-cevap hazırlığı |
 | `docs/week13/week13_wiki_final.html` | Wiki’ye yapıştırılabilir Hafta 13 HTML |
+| `docs/week14/final_document_checklist.md` | Son doküman kontrol listesi |
+| `docs/week14/backup_manifest.md` | Final yedekleme manifesti |
+| `docs/week14/presentation_rehearsal.md` | Sunum son prova planı |
+| `docs/week14/week14_wiki_final.html` | Wiki’ye yapıştırılabilir kısa Hafta 14 HTML |
 | `presentations/CreditScope_Week11_Final.pptx` | Final sunum dosyası |
 
 ## Kalite Notları
