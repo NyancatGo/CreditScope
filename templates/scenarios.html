@@ -11,13 +11,20 @@
 
 <section class="scenario-grid">
     {% for s in scenarios %}
-    <article class="scenario-card {% if s.expected == s.actual %}scenario-pass{% else %}scenario-fail{% endif %}">
+    {% set scenario_passed = s.expected == s.actual %}
+    <article class="scenario-card {% if scenario_passed %}scenario-pass{% else %}scenario-fail{% endif %}">
         <header class="scenario-head">
             <div>
                 <span class="section-kicker">{{ s.key|upper }}</span>
                 <h2>{{ s.title }}</h2>
             </div>
-            <span class="scenario-badge"><i class="fa-solid fa-circle-check"></i> Geçti</span>
+            <span class="scenario-badge">
+                {% if scenario_passed %}
+                <i class="fa-solid fa-circle-check"></i> Geçti
+                {% else %}
+                <i class="fa-solid fa-circle-exclamation"></i> Kontrol Gerekli
+                {% endif %}
+            </span>
         </header>
 
         <div class="scenario-scores">

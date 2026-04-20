@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+import json
 from typing import Any
 
 import joblib
@@ -20,8 +20,10 @@ FEATURE_NAMES_PATH = ROOT_DIR / "feature_names.pkl"
 DECISION_THRESHOLD_PATH = ROOT_DIR / "decision_threshold.pkl"
 TEMPLATES_DIR = ROOT_DIR / "templates"
 STATIC_DIR = ROOT_DIR / "static"
+DATA_DIR = ROOT_DIR / "data"
+VALIDATION_SNAPSHOT_PATH = DATA_DIR / "final_validation_snapshot.json"
 BUSINESS_RULE_VERSION = "default-review-2026-04-19"
-ASSET_VERSION = "20260419-week12"
+ASSET_VERSION = "20260420-week13"
 
 
 app = FastAPI(title="CreditScope - Risk Analizi API")
@@ -47,155 +49,63 @@ feature_names = joblib.load(FEATURE_NAMES_PATH)
 decision_threshold = joblib.load(DECISION_THRESHOLD_PATH) if DECISION_THRESHOLD_PATH.exists() else 0.50
 
 
-# --- Static snapshots (week 10/11 validated results) ---------------------------------
+# --- Final validation snapshot -------------------------------------------------------
 
-DEMO_SCENARIOS = [
-    {
-        "key": "safe",
-        "title": "Düşük Risk",
-        "expected": "Onaylanabilir Profil",
-        "actual": "Onaylanabilir Profil",
-        "model_score": 8.24,
-        "adjusted_score": 4.81,
-        "dti": 0.1957,
-        "profile": {
-            "Gelir": "92.000 $",
-            "Kredi Tutarı": "18.000 $",
-            "Kredi Notu": 790,
-            "İstihdam": "Full-time",
-            "Çalışma Süresi": "84 ay",
-            "Kefil": "Var",
-        },
-        "applied_rules": [
-            "strong_credit_score",
-            "low_dti",
-            "stable_full_time_employment",
-            "cosigner_present",
-        ],
-        "comment": (
-            "Model skoru %8.24, iş kuralları sonrası %4.81. DTI 0.1957 ve dört pozitif "
-            "kuralın birlikte etkisi düşük risk kararını destekliyor."
-        ),
-        "status": "passed",
-    },
-    {
-        "key": "review",
-        "title": "Manuel İnceleme",
-        "expected": "Manuel İnceleme",
-        "actual": "Manuel İnceleme",
-        "model_score": 40.01,
-        "adjusted_score": 48.02,
-        "dti": 0.5463,
-        "profile": {
-            "Gelir": "54.000 $",
-            "Kredi Tutarı": "29.500 $",
-            "Kredi Notu": 665,
-            "İstihdam": "Self-employed",
-            "Çalışma Süresi": "22 ay",
-            "Kefil": "Yok",
-        },
-        "applied_rules": ["high_dti"],
-        "comment": (
-            "Model skoru %40.01, iş kuralları sonrası %48.02. Profil orta bantta olduğu "
-            "için karar manuel inceleme olarak şekilleniyor."
-        ),
-        "status": "passed",
-    },
-    {
-        "key": "risky",
-        "title": "Yüksek Risk",
-        "expected": "Manuel İnceleme",
-        "actual": "Manuel İnceleme",
-        "model_score": 58.04,
-        "adjusted_score": 92.11,
-        "dti": 0.9444,
-        "profile": {
-            "Gelir": "36.000 $",
-            "Kredi Tutarı": "34.000 $",
-            "Kredi Notu": 560,
-            "İstihdam": "Unemployed",
-            "Çalışma Süresi": "4 ay",
-            "Kefil": "Yok",
-        },
-        "applied_rules": ["high_dti", "weak_credit_score", "unstable_employment"],
-        "comment": (
-            "Model skoru %58.04, iş kuralları sonrası %92.11. Yüksek DTI, düşük kredi "
-            "notu ve istihdam sinyali birlikte yüksek risk davranışını gösteriyor."
-        ),
-        "status": "passed",
-    },
-    {
-        "key": "edge",
-        "title": "Güçlü Skor, Zayıf İstihdam",
-        "expected": "Manuel İnceleme",
-        "actual": "Manuel İnceleme",
-        "model_score": 26.68,
-        "adjusted_score": 24.54,
-        "dti": 0.4412,
-        "profile": {
-            "Gelir": "68.000 $",
-            "Kredi Tutarı": "30.000 $",
-            "Kredi Notu": 780,
-            "İstihdam": "Full-time",
-            "Çalışma Süresi": "3 ay",
-            "Kefil": "Yok",
-        },
-        "applied_rules": ["strong_credit_score", "unstable_employment"],
-        "comment": (
-            "Model skoru %26.68, iş kuralları sonrası %24.54. Güçlü kredi notuna rağmen "
-            "kısa çalışma geçmişi profili manuel inceleme bandında tutuyor."
-        ),
-        "status": "passed",
-    },
-]
+def load_validation_snapshot() -> dict[str, Any]:
+    """Load tracked final evidence used by Week 12/13 UI pages."""
+    if not VALIDATION_SNAPSHOT_PATH.exists():
+        raise FileNotFoundError(f"Final validation snapshot not found: {VALIDATION_SNAPSHOT_PATH}")
+    return json.loads(VALIDATION_SNAPSHOT_PATH.read_text(encoding="utf-8"))
 
-FINAL_METRICS = {
-    "accuracy": 0.6827,
-    "precision": 0.2217,
-    "recall": 0.6901,
-    "f1": 0.3356,
-    "threshold": 0.231,
-    "recall_target": 0.69,
-    "recall_floor": 0.67,
-}
 
-MODEL_COMPARISON = [
-    {"name": "Logistic Regression", "accuracy": 0.6885, "precision": 0.2265, "recall": 0.6962, "f1": 0.3417},
-    {"name": "Random Forest", "accuracy": 0.8117, "precision": 0.2968, "recall": 0.4539, "f1": 0.3589},
-    {"name": "XGBoost (Final)", "accuracy": 0.6827, "precision": 0.2217, "recall": 0.6901, "f1": 0.3356},
-]
+VALIDATION_SNAPSHOT = load_validation_snapshot()
+DEMO_SCENARIOS = VALIDATION_SNAPSHOT["demo_scenarios"]
+FINAL_METRICS = VALIDATION_SNAPSHOT["final_metrics"]
+MODEL_COMPARISON = VALIDATION_SNAPSHOT["model_comparison"]
+CONFUSION_MATRIX = VALIDATION_SNAPSHOT["confusion_matrix"]
 
-CONFUSION_MATRIX = {
-    "true_negative": 30773,
-    "false_positive": 14366,
-    "true_positive": 4093,
-    "false_negative": 1838,
-}
+
+# --- Business rules ------------------------------------------------------------------
+
+def _rule_float(application: dict[str, Any], key: str) -> float:
+    return float(application.get(key, 0))
+
+
+def _rule_text(application: dict[str, Any], key: str) -> str:
+    return str(application.get(key, ""))
+
 
 BUSINESS_RULES = [
     {
         "id": "strong_credit_score",
         "label": "Güçlü Kredi Notu",
-        "condition": "CreditScore ≥ 750",
+        "condition": "CreditScore >= 750",
         "multiplier": 0.80,
         "impact": "Temerrüt olasılığını %20 azalt",
         "direction": "reduce",
+        "reason": "CreditScore >= 750: reduce default probability by 20%.",
+        "predicate": lambda app: _rule_float(app, "CreditScore") >= 750,
     },
     {
         "id": "low_dti",
         "label": "Düşük DTI",
-        "condition": "DTIRatio ≤ 0.35",
+        "condition": "DTIRatio <= 0.35",
         "multiplier": 0.90,
         "impact": "Temerrüt olasılığını %10 azalt",
         "direction": "reduce",
+        "reason": "DTIRatio <= 0.35: reduce default probability by 10%.",
+        "predicate": lambda app: _rule_float(app, "DTIRatio") <= 0.35,
     },
     {
         "id": "stable_full_time_employment",
         "label": "Stabil Full-time İstihdam",
-        "condition": "MonthsEmployed ≥ 36 ve Full-time",
+        "condition": "MonthsEmployed >= 36 ve Full-time",
         "multiplier": 0.90,
         "impact": "Temerrüt olasılığını %10 azalt",
         "direction": "reduce",
+        "reason": "Full-time employment for at least 36 months: reduce default probability by 10%.",
+        "predicate": lambda app: _rule_float(app, "MonthsEmployed") >= 36
+        and _rule_text(app, "EmploymentType") == "Full-time",
     },
     {
         "id": "cosigner_present",
@@ -204,14 +114,18 @@ BUSINESS_RULES = [
         "multiplier": 0.90,
         "impact": "Temerrüt olasılığını %10 azalt",
         "direction": "reduce",
+        "reason": "Co-signer present: reduce default probability by 10%.",
+        "predicate": lambda app: _rule_text(app, "HasCoSigner").lower() == "yes",
     },
     {
         "id": "high_dti",
         "label": "Yüksek DTI",
-        "condition": "DTIRatio ≥ 0.50",
+        "condition": "DTIRatio >= 0.50",
         "multiplier": 1.20,
         "impact": "Temerrüt olasılığını %20 artır",
         "direction": "increase",
+        "reason": "DTIRatio >= 0.50: increase default probability by 20%.",
+        "predicate": lambda app: _rule_float(app, "DTIRatio") >= 0.50,
     },
     {
         "id": "weak_credit_score",
@@ -220,6 +134,8 @@ BUSINESS_RULES = [
         "multiplier": 1.15,
         "impact": "Temerrüt olasılığını %15 artır",
         "direction": "increase",
+        "reason": "CreditScore < 600: increase default probability by 15%.",
+        "predicate": lambda app: _rule_float(app, "CreditScore") < 600,
     },
     {
         "id": "unstable_employment",
@@ -228,8 +144,12 @@ BUSINESS_RULES = [
         "multiplier": 1.15,
         "impact": "Temerrüt olasılığını %15 artır",
         "direction": "increase",
+        "reason": "Unemployed or employed less than 6 months: increase default probability by 15%.",
+        "predicate": lambda app: _rule_text(app, "EmploymentType") == "Unemployed"
+        or _rule_float(app, "MonthsEmployed") < 6,
     },
 ]
+
 
 NAV_ITEMS = [
     {"key": "cockpit", "href": "/", "label": "Risk Kokpiti", "icon": "fa-shield-halved"},
@@ -281,75 +201,27 @@ def _clamp_probability(value: float) -> float:
 
 
 def apply_business_rules(probability: float, application: dict[str, Any]) -> tuple[float, list[dict[str, Any]]]:
-    """Configurable heuristic layer for reducing avoidable false positives."""
+    """Apply the displayable rule definitions used by the rules page."""
     adjusted = probability
     applied_rules: list[dict[str, Any]] = []
 
-    def apply_rule(rule_id: str, condition: bool, multiplier: float, reason: str) -> None:
-        nonlocal adjusted
-        if not condition:
-            return
+    for rule in BUSINESS_RULES:
+        predicate = rule["predicate"]
+        if not predicate(application):
+            continue
 
         before = adjusted
+        multiplier = float(rule["multiplier"])
         adjusted = _clamp_probability(adjusted * multiplier)
         applied_rules.append(
             {
-                "id": rule_id,
+                "id": rule["id"],
                 "multiplier": multiplier,
                 "before": round(before * 100, 2),
                 "after": round(adjusted * 100, 2),
-                "reason": reason,
+                "reason": rule["reason"],
             }
         )
-
-    credit_score = float(application.get("CreditScore", 0))
-    dti_ratio = float(application.get("DTIRatio", 0))
-    months_employed = float(application.get("MonthsEmployed", 0))
-    employment_type = str(application.get("EmploymentType", ""))
-    has_cosigner = str(application.get("HasCoSigner", "")).lower() == "yes"
-
-    apply_rule(
-        "strong_credit_score",
-        credit_score >= 750,
-        0.80,
-        "CreditScore >= 750: reduce default probability by 20%.",
-    )
-    apply_rule(
-        "low_dti",
-        dti_ratio <= 0.35,
-        0.90,
-        "DTIRatio <= 0.35: reduce default probability by 10%.",
-    )
-    apply_rule(
-        "stable_full_time_employment",
-        months_employed >= 36 and employment_type == "Full-time",
-        0.90,
-        "Full-time employment for at least 36 months: reduce default probability by 10%.",
-    )
-    apply_rule(
-        "cosigner_present",
-        has_cosigner,
-        0.90,
-        "Co-signer present: reduce default probability by 10%.",
-    )
-    apply_rule(
-        "high_dti",
-        dti_ratio >= 0.50,
-        1.20,
-        "DTIRatio >= 0.50: increase default probability by 20%.",
-    )
-    apply_rule(
-        "weak_credit_score",
-        credit_score < 600,
-        1.15,
-        "CreditScore < 600: increase default probability by 15%.",
-    )
-    apply_rule(
-        "unstable_employment",
-        employment_type == "Unemployed" or months_employed < 6,
-        1.15,
-        "Unemployed or employed less than 6 months: increase default probability by 15%.",
-    )
 
     return adjusted, applied_rules
 

@@ -49,6 +49,10 @@
 | Kontrol | Endpoint | Status | Durum |
 | --- | --- | ---: | --- |
 | index | GET / | 200 | Geçti |
+| overview | GET /genel-bakis | 200 | Geçti |
+| demo_scenarios | GET /demo-senaryolari | 200 | Geçti |
+| model_monitoring | GET /model-izleme | 200 | Geçti |
+| rules | GET /kurallar | 200 | Geçti |
 | css | GET /static/style.css?v=20260419-week10 | 200 | Geçti |
 | js | GET /static/script.js?v=20260419-week10 | 200 | Geçti |
 | predict_low_risk | POST /predict | 200 | Geçti |

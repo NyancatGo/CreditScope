@@ -1,0 +1,115 @@
+<div style="width:100%; max-width:980px; margin:0 auto; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; color:#172033; line-height:1.65; background:#faf8f3;">
+
+  <div style="background:linear-gradient(135deg,#184d3a 0%,#23624b 100%); color:#ffffff; border-radius:20px; padding:30px 28px; margin:0 0 22px 0; box-sizing:border-box;">
+    <div style="font-size:12px; letter-spacing:1.6px; text-transform:uppercase; opacity:0.85; margin-bottom:8px;">CreditScope / Hafta 13</div>
+    <h1 style="margin:0 0 12px 0; font-size:31px; line-height:1.25;">Stress Test, Kusursuz Demo ve Jüri Hazırlığı</h1>
+    <p style="margin:0; font-size:17px;">Bu hafta yeni model geliştirmek yerine, Hafta 12 sonunda çalışan çok sayfalı prototip final jüri demosu öncesinde sağlamlaştırıldı, stres test hattı kuruldu ve savunma dokümanları hazırlandı.</p>
+  </div>
+
+  <table role="presentation" style="width:100%; border-collapse:separate; border-spacing:12px; margin:0 0 18px 0;">
+    <tr>
+      <td style="width:25%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #2f7a55; border-radius:16px; padding:16px; text-align:center;">
+        <div style="font-size:27px; font-weight:800; color:#184d3a;">3/3</div>
+        <div style="font-size:13px; color:#475569;">Review Bulgusu</div>
+      </td>
+      <td style="width:25%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #d9a441; border-radius:16px; padding:16px; text-align:center;">
+        <div style="font-size:27px; font-weight:800; color:#184d3a;">100</div>
+        <div style="font-size:13px; color:#475569;">Ardışık Predict</div>
+      </td>
+      <td style="width:25%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #4a6fa5; border-radius:16px; padding:16px; text-align:center;">
+        <div style="font-size:27px; font-weight:800; color:#184d3a;">5</div>
+        <div style="font-size:13px; color:#475569;">UI Route</div>
+      </td>
+      <td style="width:25%; background:#ffffff; border:1px solid #e5e7eb; border-top:5px solid #d66c56; border-radius:16px; padding:16px; text-align:center;">
+        <div style="font-size:27px; font-weight:800; color:#184d3a;">4</div>
+        <div style="font-size:13px; color:#475569;">Demo Senaryosu</div>
+      </td>
+    </tr>
+  </table>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 12px 0; color:#184d3a; font-size:26px;">Hafta 13 Hedefi</h2>
+    <p style="margin:0;">Hafta 13, CreditScope için final öncesi kalite kapısıdır. Amaç, sistemi yeni özelliklerle büyütmek değil; mevcut karar destek prototipinin demo sırasında kırılmamasını, metriklerinin savunulabilir olmasını ve jüri sorularına net cevaplar hazırlanmasını sağlamaktır.</p>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:26px;">Kapatılan Kalite Bulguları</h2>
+    <table style="width:100%; border-collapse:collapse; font-size:15px;">
+      <tr>
+        <td style="padding:12px 10px; border-bottom:1px solid #e5e7eb; width:32%;"><strong>Snapshot drift riski</strong></td>
+        <td style="padding:12px 10px; border-bottom:1px solid #e5e7eb;">Final metrik, model comparison, confusion matrix ve demo senaryoları tracked snapshot dosyasına taşındı.</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 10px; border-bottom:1px solid #e5e7eb;"><strong>Route smoke test eksikliği</strong></td>
+        <td style="padding:12px 10px; border-bottom:1px solid #e5e7eb;">Week 12 sayfaları validation kapsamına alındı: Genel Bakış, Demo Senaryoları, Model İzleme ve Kurallar.</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 10px;"><strong>Scenario badge hatası</strong></td>
+        <td style="padding:12px 10px;">Demo Senaryoları sayfasındaki başarı rozeti artık beklenen ve gerçek karar eşleşmesine göre koşullu render ediliyor.</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="background:#f8fafc; border:1px solid #dbe4ef; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:26px;">Stress Test Özeti</h2>
+    <table style="width:100%; border-collapse:collapse; font-size:15px; background:#ffffff;">
+      <tr>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;"><strong>UI route kontrolleri</strong></td>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;">/, /genel-bakis, /demo-senaryolari, /model-izleme, /kurallar</td>
+      </tr>
+      <tr>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;"><strong>Static asset kontrolleri</strong></td>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;">CSS, JavaScript ve model izleme görselleri</td>
+      </tr>
+      <tr>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;"><strong>Predict senaryoları</strong></td>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;">Düşük risk, manuel inceleme, yüksek risk ve edge-case profil</td>
+      </tr>
+      <tr>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;"><strong>Invalid payload</strong></td>
+        <td style="padding:10px; border-bottom:1px solid #e5e7eb;">Eksik veya geçersiz veri için kontrollü API hatası</td>
+      </tr>
+      <tr>
+        <td style="padding:10px;"><strong>Ardışık istek</strong></td>
+        <td style="padding:10px;">100 adet /predict isteği ile demo dayanıklılığı kontrolü</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 14px 0; color:#184d3a; font-size:26px;">Kusursuz Demo Akışı</h2>
+    <ol style="margin:0; padding-left:22px;">
+      <li>Genel Bakış sayfasında problem ve recall mantığını anlat.</li>
+      <li>Risk Kokpiti'nde düşük risk senaryosunu çalıştır.</li>
+      <li>Risk Kokpiti'nde yüksek risk senaryosunu çalıştır.</li>
+      <li>Demo Senaryoları sayfasında edge-case profili açıkla.</li>
+      <li>Model İzleme sayfasında recall, threshold, confusion matrix ve SHAP çıktısını göster.</li>
+      <li>Kurallar sayfasında business rule engine mantığını anlat.</li>
+      <li>CreditScope'un karar destek prototipi olarak final durumunu özetle.</li>
+    </ol>
+  </div>
+
+  <div style="background:#fffaf0; border:1px solid #f3d38b; border-radius:18px; padding:24px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 12px 0; color:#92400e; font-size:26px;">Jüri Hazırlığı</h2>
+    <p style="margin:0 0 12px 0;">Jüri dokümanı özellikle şu sorulara kısa ve savunulabilir cevaplar hazırlar:</p>
+    <div style="background:#ffffff; border-radius:14px; padding:16px; border:1px solid #f7e2a8;">
+      Neden recall? Neden XGBoost? Logistic Regression neden deploy edilmedi? SMOTE veri sızıntısı yaratıyor mu? Threshold neden 0.231? False Positive neden yüksek? Business rules modeli manipüle ediyor mu? Gerçek bankada kullanılabilir mi? Fairness ve regülasyon sınırlılıkları neler?
+    </div>
+  </div>
+
+  <div style="background:#184d3a; color:#ffffff; border-radius:18px; padding:26px; margin:0 0 18px 0; box-sizing:border-box;">
+    <h2 style="margin:0 0 10px 0; font-size:27px;">Final Öncesi Durum</h2>
+    <p style="margin:0; font-size:16px;">CreditScope, Hafta 13 sonunda yalnızca çalışan bir model demosu değil; route'ları kontrol edilmiş, stress test hattı kurulmuş, demo akışı sabitlenmiş ve jüri sorularına hazırlanmış bir kredi karar destek prototipi seviyesine gelmiştir.</p>
+  </div>
+
+  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:18px; padding:22px; margin:0; box-sizing:border-box; text-align:center;">
+    <h2 style="margin:0 0 8px 0; color:#184d3a; font-size:24px;">Ek Kaynaklar</h2>
+    <p style="margin:0 0 16px 0; color:#475569;">Final demo sonrası konuşma belgeleri ve podcast içeriği için kullanılacak bağlantılar.</p>
+    <table role="presentation" style="width:100%; border-collapse:separate; border-spacing:10px;">
+      <tr>
+        <td style="width:50%;"><a href="REPLACE_WITH_SPEECH_DOCS_LINK" target="_blank" rel="noreferrer noopener" style="display:block; text-decoration:none; background:#184d3a; color:#ffffff; padding:14px 12px; border-radius:999px; font-weight:800;">4 Konuşma Belgesi</a></td>
+        <td style="width:50%;"><a href="REPLACE_WITH_PODCAST_LINK" target="_blank" rel="noreferrer noopener" style="display:block; text-decoration:none; background:#d9a441; color:#ffffff; padding:14px 12px; border-radius:999px; font-weight:800;">Podcast İçeriği</a></td>
+      </tr>
+    </table>
+  </div>
+</div>

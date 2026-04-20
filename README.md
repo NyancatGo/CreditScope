@@ -10,6 +10,7 @@ Bu repo bir “model eğittim, skor aldım” çalışması değildir. CreditSco
 
 - [Proje Neyi Çözüyor?](#proje-neyi-çözüyor)
 - [Şu Anki Durum](#şu-anki-durum)
+- [Hafta 13 Final Öncesi Sağlamlaştırma](#hafta-13-final-öncesi-sağlamlaştırma)
 - [Sistem Mimarisi](#sistem-mimarisi)
 - [Model Stratejisi](#model-stratejisi)
 - [Business Rule Engine](#business-rule-engine)
@@ -49,7 +50,7 @@ Hafta 12 itibarıyla proje aşağıdaki seviyeye gelmiştir:
 | API | `/predict` endpoint'i aktif ve business rules uyguluyor |
 | UI | 5 sayfalı FastAPI + Jinja2 arayüz aktif |
 | Demo | 4 doğrulanmış senaryo mevcut |
-| Dokümantasyon | Week 10, Week 11 ve final sunum dokümanları mevcut |
+| Dokümantasyon | Week 10, Week 11 ve Week 13 final öncesi dokümanları mevcut |
 
 ### Aktif Sayfalar
 
@@ -61,6 +62,25 @@ Hafta 12 itibarıyla proje aşağıdaki seviyeye gelmiştir:
 | `/model-izleme` | Model İzleme | Final metrikler, model karşılaştırması, confusion matrix ve SHAP |
 | `/kurallar` | Kurallar | Business rule engine açıklaması |
 | `/docs` | API Docs | FastAPI Swagger dokümantasyonu |
+
+## Hafta 13 Final Öncesi Sağlamlaştırma
+
+Hafta 13, yeni model araştırması değil; final jüri demosu öncesi sağlamlaştırma haftasıdır. Bu aşamada Week 12 sonrası tespit edilen kalite bulguları kapatılmış, stress test hattı kurulmuş ve demo/jüri hazırlığı dokümante edilmiştir.
+
+| Çıktı | Konum | Amaç |
+| --- | --- | --- |
+| Final validation snapshot | `data/final_validation_snapshot.json` | UI sayfalarında kullanılan final metrik ve demo verilerini tek kaynağa toplar |
+| Stress test scripti | `tools/week13_stress_test.py` | Route, static asset, API senaryosu, invalid payload ve 100 ardışık predict kontrolü yapar |
+| Stress test raporu | `docs/week13/stress_test_report.md` | Hafta 13 test sonuçlarını raporlar |
+| Demo runbook | `docs/week13/demo_runbook.md` | Final demo akışını adım adım sabitler |
+| Jüri Q&A | `docs/week13/jury_questions.md` | Muhtemel jüri sorularına kısa ve savunulabilir cevaplar hazırlar |
+| Wiki HTML | `docs/week13/week13_wiki_final.html` | Hafta 13 wiki sayfası için hazır HTML içerik sunar |
+
+Hafta 13 ile birlikte şu üç kalite notu kapatılmıştır:
+
+- UI snapshot verileri `api.py` içine dağınık şekilde gömülü kalmak yerine tracked snapshot dosyasına taşındı.
+- Week 12 route'ları validation smoke test kapsamına eklendi.
+- Demo Senaryoları sayfasındaki başarı rozeti pass/fail durumuna göre koşullu hale getirildi.
 
 ## Sistem Mimarisi
 
@@ -470,6 +490,29 @@ Hafta 12 manuel HTTP doğrulamasında alınan sonuçlar:
 | `GET /kurallar` | `200` |
 | `POST /predict` | `200` |
 
+### Hafta 13 Stress Test
+
+```bash
+py tools/week13_stress_test.py
+```
+
+Bu script final demo öncesinde şu kontrolleri yapar:
+
+| Kontrol | Açıklama |
+| --- | --- |
+| UI route'ları | 5 aktif sayfanın `200` dönmesini kontrol eder |
+| Static asset'ler | CSS, JS ve model izleme görsellerini kontrol eder |
+| Predict senaryoları | Düşük risk, manuel inceleme, yüksek risk ve edge-case profilleri çalıştırır |
+| Invalid payload | Eksik/geçersiz veri için kontrollü API hatası bekler |
+| Ardışık istek | 100 adet `/predict` isteğini hata vermeden tamamlamayı hedefler |
+
+Çıktılar:
+
+| Dosya | Rol |
+| --- | --- |
+| `outputs/week13/stress_test_results.json` | Makine okunabilir stress test sonucu |
+| `docs/week13/stress_test_report.md` | Teslim edilebilir stress test raporu |
+
 ## Teslim Dokümanları
 
 | Konum | Açıklama |
@@ -480,19 +523,23 @@ Hafta 12 manuel HTTP doğrulamasında alınan sonuçlar:
 | `docs/week11/future_work.md` | Gelecek çalışma planı |
 | `docs/week11/presentation_storyboard.md` | Slayt slayt sunum akışı |
 | `docs/week11/week11_wiki_final.html` | Wiki’ye yapıştırılabilir Hafta 11 HTML |
+| `docs/week13/stress_test_report.md` | Hafta 13 stress test raporu |
+| `docs/week13/demo_runbook.md` | Final demo akış planı |
+| `docs/week13/jury_questions.md` | Jüri soru-cevap hazırlığı |
+| `docs/week13/week13_wiki_final.html` | Wiki’ye yapıştırılabilir Hafta 13 HTML |
 | `presentations/CreditScope_Week11_Final.pptx` | Final sunum dosyası |
 
 ## Kalite Notları
 
-Proje çalışır ve demo seviyesinde doğrulanmış durumdadır. Bununla birlikte Week 12 incelemesinde sürdürülebilirlik için üç net iyileştirme alanı belirlenmiştir:
+Proje çalışır ve demo seviyesinde doğrulanmış durumdadır. Week 13 kapsamında Week 12 incelemesinde bulunan üç ana kalite notu kapatılmıştır:
 
 | Not | Açıklama |
 | --- | --- |
-| Snapshot single source of truth | UI sayfalarında gösterilen metrik ve senaryo verileri ileride artifact’lerden otomatik beslenmelidir |
-| Week 12 route smoke tests | Yeni route’lar validation script kapsamına eklenmelidir |
-| Scenario badge rendering | Demo senaryosu rozeti `expected == actual` sonucuna göre koşullu render edilmelidir |
+| Snapshot single source of truth | UI sayfalarında gösterilen metrik ve senaryo verileri tracked snapshot dosyasından okunur |
+| Week 12 route smoke tests | Yeni route’lar validation script kapsamına eklendi |
+| Scenario badge rendering | Demo senaryosu rozeti `expected == actual` sonucuna göre koşullu render edilir |
 
-Bu maddeler başarısızlık değil, prototipi daha üretim-dostu ve sürdürülebilir hale getirecek kalite adımlarıdır.
+Kalan kalite başlıkları artık daha çok production-readiness tarafındadır: monitoring, drift takibi, fairness validasyonu, auth ve audit logging.
 
 ## Bu Proje Ne Değildir?
 
