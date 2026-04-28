@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 jinja2
+python-multipart
 pandas
 numpy
 scikit-learn
@@ -10,3 +11,5 @@ matplotlib
 seaborn
 imbalanced-learn
 shap
+passlib[bcrypt]
+bcrypt<4

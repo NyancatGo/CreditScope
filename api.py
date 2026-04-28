@@ -2,15 +2,27 @@ from __future__ import annotations
 
 import json
 from typing import Any
+from urllib.parse import quote
 
 import joblib
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 
+from auth import (
+    SESSION_COOKIE_NAME,
+    SESSION_MAX_AGE_SECONDS,
+    authenticate_user,
+    create_first_user,
+    create_session,
+    delete_session,
+    get_user_by_session_token,
+    has_users,
+)
 from preprocessing import ROOT_DIR, prepare_inference_frame
 
 
@@ -26,7 +38,12 @@ BUSINESS_RULE_VERSION = "default-review-2026-04-19"
 ASSET_VERSION = "20260420-week13"
 
 
-app = FastAPI(title="CreditScope - Risk Analizi API")
+app = FastAPI(
+    title="CreditScope - Risk Analizi API",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -160,13 +177,56 @@ NAV_ITEMS = [
 ]
 
 
+def _current_user(request: Request) -> dict[str, Any] | None:
+    return get_user_by_session_token(request.cookies.get(SESSION_COOKIE_NAME))
+
+
+def _safe_next_path(next_path: str | None) -> str:
+    if not next_path or not next_path.startswith("/") or next_path.startswith("//"):
+        return "/"
+    return next_path
+
+
+def _login_redirect(request: Request) -> RedirectResponse:
+    target = str(request.url.path)
+    if request.url.query:
+        target = f"{target}?{request.url.query}"
+    return RedirectResponse(url=f"/login?next={quote(target)}", status_code=303)
+
+
 def _page_context(request: Request, active: str, **extra: Any) -> dict[str, Any]:
+    current_user = extra.pop("current_user", None)
+    if current_user is None:
+        current_user = _current_user(request)
     return {
         "request": request,
         "nav_items": NAV_ITEMS,
         "active": active,
+        "current_user": current_user,
         **extra,
     }
+
+
+def _protected_template(
+    request: Request,
+    template_name: str,
+    active: str,
+    **extra: Any,
+) -> HTMLResponse | RedirectResponse:
+    current_user = _current_user(request)
+    if current_user is None:
+        return _login_redirect(request)
+    return templates.TemplateResponse(
+        template_name,
+        _page_context(request, active=active, current_user=current_user, **extra),
+    )
+
+
+def require_api_user(request: Request) -> dict[str, Any]:
+    current_user = _current_user(request)
+    if current_user is None:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    return current_user
 
 
 # --- Predict API ---------------------------------------------------------------------
@@ -228,76 +288,212 @@ def apply_business_rules(probability: float, application: dict[str, Any]) -> tup
 
 # --- Page routes ---------------------------------------------------------------------
 
-@app.get("/", response_class=HTMLResponse)
-def index(request: Request) -> HTMLResponse:
+@app.get("/login", response_class=HTMLResponse, response_model=None)
+def login_page(request: Request) -> HTMLResponse | RedirectResponse:
+    next_path = _safe_next_path(request.query_params.get("next"))
+    if _current_user(request) is not None:
+        return RedirectResponse(url=next_path, status_code=303)
+
     return templates.TemplateResponse(
+        "login.html",
+        {
+            "request": request,
+            "mode": "login",
+            "next_path": next_path,
+            "error": None,
+            "registered": request.query_params.get("registered") == "1",
+            "registration_available": not has_users(),
+        },
+    )
+
+
+@app.post("/login", response_class=HTMLResponse, response_model=None)
+def login_submit(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+    next_path: str = Form("/"),
+) -> HTMLResponse | RedirectResponse:
+    next_path = _safe_next_path(next_path)
+    user = authenticate_user(username, password)
+    if user is None:
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "mode": "login",
+                "next_path": next_path,
+                "error": "Kullanıcı adı veya şifre hatalı.",
+                "registered": False,
+                "registration_available": not has_users(),
+            },
+            status_code=401,
+        )
+
+    session_token = create_session(int(user["id"]))
+    response = RedirectResponse(url=next_path, status_code=303)
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=session_token,
+        max_age=SESSION_MAX_AGE_SECONDS,
+        httponly=True,
+        samesite="lax",
+        secure=False,
+    )
+    return response
+
+
+@app.get("/logout")
+def logout(request: Request) -> RedirectResponse:
+    delete_session(request.cookies.get(SESSION_COOKIE_NAME))
+    response = RedirectResponse(url="/login", status_code=303)
+    response.delete_cookie(SESSION_COOKIE_NAME)
+    return response
+
+
+@app.get("/register", response_class=HTMLResponse, response_model=None)
+def register_page(request: Request) -> HTMLResponse:
+    if has_users():
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "mode": "register_disabled",
+                "next_path": "/",
+                "error": "İlk admin kullanıcısı zaten oluşturulmuş. Kayıt devre dışı.",
+                "registered": False,
+                "registration_available": False,
+            },
+            status_code=403,
+        )
+
+    return templates.TemplateResponse(
+        "login.html",
+        {
+            "request": request,
+            "mode": "register",
+            "next_path": "/",
+            "error": None,
+            "registered": False,
+            "registration_available": True,
+        },
+    )
+
+
+@app.post("/register", response_class=HTMLResponse, response_model=None)
+def register_submit(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+) -> HTMLResponse | RedirectResponse:
+    if has_users():
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "mode": "register_disabled",
+                "next_path": "/",
+                "error": "İlk admin kullanıcısı zaten oluşturulmuş. Kayıt devre dışı.",
+                "registered": False,
+                "registration_available": False,
+            },
+            status_code=403,
+        )
+
+    try:
+        create_first_user(username, password)
+    except (PermissionError, ValueError) as exc:
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "mode": "register",
+                "next_path": "/",
+                "error": str(exc),
+                "registered": False,
+                "registration_available": True,
+            },
+            status_code=400,
+        )
+
+    return RedirectResponse(url="/login?registered=1", status_code=303)
+
+
+@app.get("/docs", response_class=HTMLResponse, response_model=None)
+def protected_docs(request: Request) -> HTMLResponse | RedirectResponse:
+    if _current_user(request) is None:
+        return _login_redirect(request)
+    return get_swagger_ui_html(openapi_url="/openapi.json", title=f"{app.title} - Docs")
+
+
+@app.get("/openapi.json")
+def protected_openapi(_: dict[str, Any] = Depends(require_api_user)) -> JSONResponse:
+    return JSONResponse(app.openapi())
+
+
+@app.get("/", response_class=HTMLResponse, response_model=None)
+def index(request: Request) -> HTMLResponse | RedirectResponse:
+    return _protected_template(
+        request,
         "cockpit.html",
-        _page_context(
-            request,
-            active="cockpit",
-            decision_threshold=round(float(decision_threshold), 3),
-        ),
+        active="cockpit",
+        decision_threshold=round(float(decision_threshold), 3),
     )
 
 
-@app.get("/genel-bakis", response_class=HTMLResponse)
-def overview(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(
+@app.get("/genel-bakis", response_class=HTMLResponse, response_model=None)
+def overview(request: Request) -> HTMLResponse | RedirectResponse:
+    return _protected_template(
+        request,
         "overview.html",
-        _page_context(
-            request,
-            active="overview",
-            metrics=FINAL_METRICS,
-            rule_count=len(BUSINESS_RULES),
-        ),
+        active="overview",
+        metrics=FINAL_METRICS,
+        rule_count=len(BUSINESS_RULES),
     )
 
 
-@app.get("/demo-senaryolari", response_class=HTMLResponse)
-def demo_scenarios(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(
+@app.get("/demo-senaryolari", response_class=HTMLResponse, response_model=None)
+def demo_scenarios(request: Request) -> HTMLResponse | RedirectResponse:
+    return _protected_template(
+        request,
         "scenarios.html",
-        _page_context(
-            request,
-            active="scenarios",
-            scenarios=DEMO_SCENARIOS,
-        ),
+        active="scenarios",
+        scenarios=DEMO_SCENARIOS,
     )
 
 
-@app.get("/model-izleme", response_class=HTMLResponse)
-def model_monitoring(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(
+@app.get("/model-izleme", response_class=HTMLResponse, response_model=None)
+def model_monitoring(request: Request) -> HTMLResponse | RedirectResponse:
+    return _protected_template(
+        request,
         "monitoring.html",
-        _page_context(
-            request,
-            active="monitoring",
-            metrics=FINAL_METRICS,
-            comparison=MODEL_COMPARISON,
-            confusion=CONFUSION_MATRIX,
-        ),
+        active="monitoring",
+        metrics=FINAL_METRICS,
+        comparison=MODEL_COMPARISON,
+        confusion=CONFUSION_MATRIX,
     )
 
 
-@app.get("/kurallar", response_class=HTMLResponse)
-def rules_page(request: Request) -> HTMLResponse:
+@app.get("/kurallar", response_class=HTMLResponse, response_model=None)
+def rules_page(request: Request) -> HTMLResponse | RedirectResponse:
     reduce_rules = [r for r in BUSINESS_RULES if r["direction"] == "reduce"]
     increase_rules = [r for r in BUSINESS_RULES if r["direction"] == "increase"]
-    return templates.TemplateResponse(
+    return _protected_template(
+        request,
         "rules.html",
-        _page_context(
-            request,
-            active="rules",
-            reduce_rules=reduce_rules,
-            increase_rules=increase_rules,
-            threshold=round(float(decision_threshold), 3),
-            rule_version=BUSINESS_RULE_VERSION,
-        ),
+        active="rules",
+        reduce_rules=reduce_rules,
+        increase_rules=increase_rules,
+        threshold=round(float(decision_threshold), 3),
+        rule_version=BUSINESS_RULE_VERSION,
     )
 
 
 @app.post("/predict")
-def predict_risk(application: LoanApplication) -> dict[str, Any]:
+def predict_risk(
+    application: LoanApplication,
+    _: dict[str, Any] = Depends(require_api_user),
+) -> dict[str, Any]:
     input_dict = _model_dump(application)
     engineered_df, _, x_scaled = prepare_inference_frame(input_dict, feature_names, scaler)
     engineered_dict = engineered_df.iloc[0].to_dict()

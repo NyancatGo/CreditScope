@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if mode == "register" %}İlk Admin Kaydı{% else %}Giriş{% endif %} — CreditScope</title>
+    <link rel="stylesheet" href="/static/style.css?v={{ asset_version }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="auth-body">
+    <main class="auth-shell">
+        <section class="auth-card">
+            <a class="auth-brand" href="/login" aria-label="CreditScope">
+                <span class="brand-icon"><i class="fa-solid fa-building-columns"></i></span>
+                <span>
+                    <strong>CreditScope</strong>
+                    <small>Risk AI</small>
+                </span>
+            </a>
+
+            {% if mode == "register" %}
+            <div class="auth-copy">
+                <span class="section-kicker">İlk Kurulum</span>
+                <h1>Admin kullanıcısını oluştur</h1>
+                <p>Bu ekran yalnızca ilk kullanıcı oluşturulana kadar aktiftir.</p>
+            </div>
+            <form class="auth-form" method="post" action="/register">
+                <label class="field">
+                    <span>Kullanıcı adı</span>
+                    <input type="text" name="username" autocomplete="username" required autofocus>
+                </label>
+                <label class="field">
+                    <span>Şifre</span>
+                    <input type="password" name="password" autocomplete="new-password" required>
+                </label>
+                {% if error %}<p class="auth-error">{{ error }}</p>{% endif %}
+                <button type="submit" class="primary-action auth-submit">
+                    <i class="fa-solid fa-user-plus"></i> İlk admini oluştur
+                </button>
+            </form>
+            <p class="auth-alt"><a href="/login">Giriş ekranına dön</a></p>
+
+            {% elif mode == "register_disabled" %}
+            <div class="auth-copy">
+                <span class="section-kicker">Kayıt Kapalı</span>
+                <h1>İlk admin zaten var</h1>
+                <p>CreditScope tek kullanıcı modunda çalışıyor. Yeni kayıt oluşturulamaz.</p>
+            </div>
+            {% if error %}<p class="auth-error">{{ error }}</p>{% endif %}
+            <p class="auth-alt"><a href="/login">Giriş ekranına dön</a></p>
+
+            {% else %}
+            <div class="auth-copy">
+                <span class="section-kicker">Güvenli Erişim</span>
+                <h1>CreditScope'a giriş yap</h1>
+                <p>Kokpit, model izleme ve tahmin API'si için oturum açın.</p>
+            </div>
+            {% if registered %}
+            <p class="auth-success">Admin kullanıcısı oluşturuldu. Şimdi giriş yapabilirsiniz.</p>
+            {% endif %}
+            <form class="auth-form" method="post" action="/login">
+                <input type="hidden" name="next_path" value="{{ next_path }}">
+                <label class="field">
+                    <span>Kullanıcı adı</span>
+                    <input type="text" name="username" autocomplete="username" required autofocus>
+                </label>
+                <label class="field">
+                    <span>Şifre</span>
+                    <input type="password" name="password" autocomplete="current-password" required>
+                </label>
+                {% if error %}<p class="auth-error">{{ error }}</p>{% endif %}
+                <button type="submit" class="primary-action auth-submit">
+                    <i class="fa-solid fa-right-to-bracket"></i> Giriş yap
+                </button>
+            </form>
+            {% if registration_available %}
+            <p class="auth-alt">İlk kurulum mu? <a href="/register">Admin kullanıcısını oluştur</a></p>
+            {% endif %}
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

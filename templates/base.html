@@ -43,6 +43,10 @@
                 </div>
                 <div class="command-actions">
                     <span class="system-pill"><i class="fa-solid fa-circle-check"></i> Model hazır</span>
+                    {% if current_user %}
+                    <span class="user-pill"><i class="fa-solid fa-user-shield"></i> {{ current_user.username }}</span>
+                    <a class="logout-link" href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Çıkış</a>
+                    {% endif %}
                     <span class="branch-pill"><i class="fa-solid fa-location-dot"></i> Merkez Şube #001</span>
                 </div>
             </header>

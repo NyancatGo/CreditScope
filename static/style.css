@@ -225,12 +225,15 @@ p {
 .command-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 10px;
-    white-space: nowrap;
 }
 
 .system-pill,
-.branch-pill {
+.branch-pill,
+.user-pill,
+.logout-link {
     min-height: 40px;
     display: inline-flex;
     align-items: center;
@@ -238,6 +241,8 @@ p {
     padding: 0 13px;
     border-radius: var(--radius);
     font-weight: 900;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .system-pill {
@@ -245,9 +250,129 @@ p {
     color: #0f766e;
 }
 
+.user-pill {
+    background: #eef2ff;
+    color: #3730a3;
+}
+
+.logout-link {
+    border: 1px solid #f1b5b5;
+    background: #fff0f0;
+    color: #b42318;
+}
+
 .branch-pill {
     background: #edf2f7;
     color: #27364f;
+}
+
+.auth-body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 28px;
+    background:
+        linear-gradient(135deg, rgb(255 255 255 / 0.86), rgb(238 248 246 / 0.92)),
+        var(--paper);
+}
+
+.auth-shell {
+    width: min(460px, 100%);
+}
+
+.auth-card {
+    padding: 30px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+}
+
+.auth-brand {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--ink);
+    text-decoration: none;
+}
+
+.auth-brand strong,
+.auth-brand small {
+    display: block;
+}
+
+.auth-brand strong {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.auth-brand small {
+    margin-top: 4px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.auth-copy {
+    margin-top: 30px;
+}
+
+.auth-copy h1 {
+    margin-top: 10px;
+    font-size: 34px;
+    line-height: 1.05;
+    color: #13213a;
+}
+
+.auth-copy p {
+    margin-top: 12px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    font-weight: 700;
+}
+
+.auth-form {
+    display: grid;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.auth-submit {
+    width: 100%;
+}
+
+.auth-error,
+.auth-success,
+.auth-alt {
+    border-radius: var(--radius);
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.auth-error {
+    padding: 10px 12px;
+    background: #fff0f0;
+    color: #b42318;
+}
+
+.auth-success {
+    margin-top: 20px;
+    padding: 10px 12px;
+    background: #e8f7f4;
+    color: #0f766e;
+}
+
+.auth-alt {
+    margin-top: 18px;
+    color: var(--ink-soft);
+    text-align: center;
+}
+
+.auth-alt a {
+    color: #0f766e;
+    font-weight: 950;
+    text-decoration: none;
 }
 
 .hero,

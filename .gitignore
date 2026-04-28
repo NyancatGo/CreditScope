@@ -13,3 +13,5 @@ Thumbs.db
 
 outputs/
 tmp/
+auth.db
+auth.db-*
